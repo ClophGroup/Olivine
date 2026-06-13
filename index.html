@@ -138,8 +138,7 @@ iframe.active{display:block}
 @keyframes subReveal{from{opacity:0;transform:translateY(12px);letter-spacing:6px}to{opacity:1;transform:translateY(0);letter-spacing:2.5px}}
 .home-in{width:min(520px,85%);height:50px;border-radius:25px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:0 24px;font-size:15px;font-family:inherit;box-shadow:0 4px 24px rgba(0,0,0,.2);outline:none;transition:all .2s;color:#fff;opacity:0;position:relative;z-index:2}
 .home-in.animating{animation:inputReveal .6s cubic-bezier(.16,1,.3,1) .32s forwards}
-@keyframes inputReveal{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}
-}
+@keyframes inputReveal{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 .home-in::placeholder{color:rgba(255,255,255,.6);font-weight:300}
 .home-in:focus{box-shadow:0 0 0 2px rgba(255,255,255,.5);background:rgba(255,255,255,.25)}
 .home-app-chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:12px;position:relative;z-index:2;max-width:min(520px,85%)}
@@ -215,7 +214,6 @@ iframe.active{display:block}
 .app-item-del:hover{opacity:1!important;background:rgba(255,80,80,.15);color:#f87171}
 .app-empty{text-align:center;color:var(--text-light);padding:30px 10px;font-size:12px;opacity:.5;line-height:1.6}
 
-/* ====== 検索対策通知カード ====== */
 .search-counter-card{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(120%);width:380px;max-width:calc(100vw - 40px);z-index:10001;pointer-events:none;transition:transform .5s cubic-bezier(.16,1,.3,1);opacity:0}
 .search-counter-card.show{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto}
 .search-counter-card.hiding{transform:translateX(-50%) translateY(120%);opacity:0;transition:transform .3s ease-in,opacity .3s ease-in}
@@ -289,7 +287,6 @@ iframe.active{display:block}
 .summary-img:hover{transform:translateY(-2px) scale(1.02)!important;box-shadow:0 4px 16px rgba(0,0,0,.4)}
 .summary-no-img{font-size:12px;color:var(--text-light);opacity:.5;padding:8px 0}
 
-/* ====== サイドバーIframe改善 ====== */
 .epm-sidebar-iframe-wrap{flex:1;overflow:hidden;position:relative;display:none;background:#000}
 .epm-sidebar-iframe-wrap.active{display:flex;flex-direction:column}
 .epm-sidebar-iframe-scaler{flex:1;overflow:hidden;position:relative}
@@ -473,658 +470,495 @@ iframe.active{display:block}
 </div>
 </div>
 
-<!-- 検索対策通知カード -->
 <div class="search-counter-card" id="searchCounterCard">
 <div class="sc-card-aurora">
 <div class="sc-card-inner">
-<button class="sc-card-close" id="scCardClose" onclick="dismissSearchCounterCard()"><i class="fas fa-xmark"></i></button>
 <div class="sc-card-content">
-<div id="scCardImgArea"></div>
+<div class="sc-card-img-placeholder"><i class="fas fa-search"></i></div>
 <div class="sc-card-body">
-<div class="sc-card-label">Olivine Info</div>
+<div class="sc-card-label">SEARCH LOG</div>
 <div class="sc-card-text" id="scCardText"></div>
 </div>
 </div>
+<button class="sc-card-close" id="scCardClose" onclick="closeSearchCounterCard()">&times;</button>
 </div>
 </div>
 </div>
 
 <div class="main-area" id="mainArea">
-<canvas id="searchFxCanvas"></canvas>
-<div class="home" id="homeScreen">
+<div class="home" id="home">
 <div class="home-bg" id="homeBg"></div>
 <div class="home-bg-overlay"></div>
-<div class="home-t" id="homeTitle">Olivine</div>
-<div class="home-sub" id="homeSub">Cultivate your web</div>
-<input type="text" class="home-in" id="homeInput" placeholder="Webを検索...">
+<h1 class="home-t" id="homeTitle">Olivine</h1>
+<p class="home-sub" id="homeSub">Search the web beautifully</p>
+<input type="text" class="home-in" id="homeInput" placeholder="検索またはURLを入力..." autocomplete="off" spellcheck="false">
 <div class="home-app-chips" id="homeAppChips"></div>
-<div class="home-suggest" id="homeSuggest">
-<div class="home-suggest-box">
-<button class="home-clean-btn" onclick="cleanHomeSuggest()" title="スキップ">Skip</button>
-<div class="home-suggest-text" id="homeSuggestText"></div>
-<div class="home-suggest-chips" id="homeSuggestChips"></div>
-</div>
-</div>
 <div class="home-settings">
-<button class="home-set-btn" onclick="resetHomeBg()" title="日替わりに戻す"><i class="fas fa-rotate"></i></button>
-<button class="home-set-btn" onclick="document.getElementById('bgUpload').click()" title="背景を変更"><i class="fas fa-image"></i></button>
-<input type="file" id="bgUpload" accept="image/*" style="display:none" onchange="handleBgUpload(event)">
+<button class="home-set-btn" onclick="openSettings()"><i class="fas fa-gear"></i></button>
 </div>
 </div>
-<div class="clarvet-activation" id="clarvetActivation">
-<div class="clarvet-activation-bg" id="clarvetActivationBg"></div>
-<div class="clarvet-activation-text" id="clarvetActivationText"></div>
-<div class="clarvet-mode-label" id="clarvetModeLabel">ClarvetMode</div>
+<canvas id="searchFxCanvas"></canvas>
 </div>
-<div class="summary-card-overlay" id="summaryCardOverlay">
-<div class="summary-card-aurora">
-<div class="summary-card-inner">
-<button class="summary-card-close" onclick="closeSummaryCard()">&times;</button>
-<div class="summary-card-title" id="summaryCardTitle"></div>
-<div class="summary-first-line" id="summaryFirstLine"></div>
-<div class="summary-rest-text" id="summaryRestText"></div>
-<div class="summary-images-scroll" id="summaryImagesScroll"></div>
+
+<div class="overlay-panel ext-panel" id="extPanel">
+<div class="ext-head">
+<span>Extensions</span>
+<button class="ext-close" onclick="toggleExtensions()">&times;</button>
 </div>
-</div>
-</div>
-</div>
-<div class="backdrop" id="backdrop" onclick="closeAllOverlays()"></div>
-<div class="ext-panel overlay-panel" id="extPanel">
-<div class="ext-head"><span>Panel</span><button class="ext-close" onclick="closeAllOverlays()">&times;</button></div>
 <div class="ext-tabs">
-<button class="ext-tab-btn active" onclick="switchExtTab('memo',this)">Memo</button>
-<button class="ext-tab-btn" onclick="switchExtTab('history',this)">History</button>
-<button class="ext-tab-btn" onclick="switchExtTab('bookmarks',this)">Marks</button>
-<button class="ext-tab-btn" onclick="switchExtTab('apps',this)">Apps</button>
+<button class="ext-tab-btn active" onclick="switchExtTab('memo')">Memo</button>
+<button class="ext-tab-btn" onclick="switchExtTab('history')">History</button>
+<button class="ext-tab-btn" onclick="switchExtTab('bookmarks')">Bookmarks</button>
+<button class="ext-tab-btn" onclick="switchExtTab('apps')">Apps</button>
 </div>
-<div class="ext-content active" id="ext-memo"><textarea class="memo-textarea" id="memoText" placeholder="メモを入力..."></textarea><div style="text-align:right;font-size:10px;color:var(--text-light);margin-top:4px;opacity:.6" id="memoStatus">保存済み</div></div>
-<div class="ext-content" id="ext-history"><div id="historyList"></div><button class="clear-btn" onclick="clearExtHistory()">履歴を一括削除</button></div>
-<div class="ext-content" id="ext-bookmarks"><div id="bookmarkList"></div></div>
-<div class="ext-content" id="ext-apps">
-<div class="app-add-form">
-<input type="text" class="app-add-input" id="appNameInput" placeholder="呼び出し名">
-<input type="text" class="app-add-input" id="appUrlInput" placeholder="URL">
-<button class="app-add-btn" onclick="addApp()">追加</button>
+<div class="ext-content active" id="extMemo">
+<textarea class="memo-textarea" id="memoText" placeholder="ここにメモを入力..."></textarea>
 </div>
-<div id="appList"></div>
+<div class="ext-content" id="extHistory"></div>
+<div class="ext-content" id="extBookmarks"></div>
+<div class="ext-content" id="extApps"></div>
 </div>
-</div>
+
 <div class="epm-sidebar" id="epmSidebar">
-<div class="epm-border-wrapper"><div class="epm-inner">
-<div class="epm-header"><span>Clarvet</span><button class="epm-close" onclick="toggleEpmSidebar()">&times;</button></div>
-<div class="epm-sidebar-url-bar" id="epmSidebarUrlBar">
-<i class="fas fa-globe epm-url-icon" id="epmUrlIcon"></i>
-<button class="epm-sidebar-url-back" id="epmSidebarUrlBack" onclick="epmSidebarGoBack()" title="チャットに戻る"><i class="fas fa-chevron-left"></i></button>
-<input type="text" class="epm-sidebar-url-input disabled" id="epmSidebarUrlInput" placeholder="ClarvetModeをOnにしてください" autocomplete="off" spellcheck="false">
-<button class="epm-sidebar-url-clear" id="epmSidebarUrlClear" onclick="clearEpmSidebarUrl()"><i class="fas fa-xmark"></i></button>
-<button class="epm-sidebar-url-go disabled" id="epmSidebarUrlGo" onclick="epmSidebarNavigate()"><i class="fas fa-arrow-right"></i></button>
-<div class="epm-sidebar-url-warning" id="epmSidebarUrlWarning">ClarvetModeをOnにしてください</div>
+<div class="epm-border-wrapper">
+<div class="epm-inner">
+<div class="epm-header">
+<span>Clarvet</span>
+<button class="epm-close" onclick="toggleEpmSidebar()">&times;</button>
 </div>
-<div class="epm-sidebar-iframe-wrap" id="epmSidebarIframeWrap">
-<button class="epm-sidebar-iframe-close" onclick="epmSidebarCloseIframe()">&times;</button>
-<div class="epm-sidebar-iframe-zoom-hint" id="epmIframeZoomHint">ダブルタップでズーム解除</div>
-<div class="epm-sidebar-iframe-scaler mobile-view" id="epmSidebarIframeScaler">
-<iframe id="epmSidebarIframe" sandbox="allow-forms allow-scripts allow-same-origin allow-top-navigation"></iframe>
+<div class="epm-chat" id="epmChat">
+<div class="epm-welcome" id="epmWelcome">
+<div class="epm-welcome-title">Clarvet Chat</div>
+<div class="epm-welcome-sub">OlivineのAIアシスタント</div>
+<div class="epm-suggestions" id="epmSuggestions"></div>
 </div>
 </div>
-<div class="epm-chat" id="epmChat"><div class="epm-welcome" id="epmWelcome"></div></div>
-<div class="epm-input-area" id="epmInputArea">
-<div class="epm-context-link" id="epmContextLink" onclick="insertCurrentUrl()"><i class="fas fa-link"></i> <span id="epmContextUrl">現在のページのURLを追加</span></div>
+<div class="epm-input-area">
 <div class="epm-input-box">
-<input type="text" id="epmInput" placeholder="質問、または「URL キーワード」...">
-<button id="epmSendBtn" onclick="handleEpmSend()"><i class="fas fa-arrow-up"></i></button>
+<input type="text" id="epmInput" placeholder="メッセージを入力..." autocomplete="off">
+<button id="epmSendBtn" onclick="sendEpmMessage()"><i class="fas fa-paper-plane"></i></button>
 </div>
 </div>
-</div></div>
-</div>
-<div class="copilot-top-notif" id="copilotTopNotif" onclick="onTopNotifClick()">
-<div class="copilot-top-inner">
-<span class="copilot-top-label">Clarvet</span>
-<span class="copilot-top-msg">Clarvetからメッセージが届いています。</span>
 </div>
 </div>
-<div id="epmImgModal">
-<button class="modal-close-btn" onclick="closeImageModal()">&times;</button>
-<img id="epmModalImg" onclick="event.stopPropagation()" src="">
 </div>
+
 <div id="notification-area"></div>
 <div id="notification-area-left"></div>
+<div class="backdrop" id="backdrop" onclick="closeAllOverlays()"></div>
+
+<div id="epmImgModal">
+<button class="modal-close-btn" onclick="closeImgModal()">&times;</button>
+<img id="epmModalImg" src="" alt="">
+</div>
+
 <script>
-var WELCOME_KEYWORDS=["量子コンピュータ","進化論","印象派","相対性理論","シェイクスピア","ルネサンス","ブロックチェーン","深層学習","万有引力","ミシェル・フーコー","シュルレアリスム","浮世絵","太陽系","フェミニズム","DNA複製","バロック音楽","東日本大震災","ナノテクノロジー","暗号解読","新表現主義","バグダッド","シベリア鉄道","メタバース","正義論","超弦理論","ロマネスク建築","カフカ","印象派の光と影","アイスランド","ミーム学","マキャベリ","アール・ヌーヴォー","地熱発電","マヤ暦","チューリッヒ","ゲシュタルト","土壌微生物","ビート世代","マチュ・ピチュ","ポストモダン","量子もつれ","人工光合成","ヒッピームーブメント","バウハウス","プラトンの洞窟","ゼロ炭素","アバンギャルド","レトリーバー"];
-var PROPOSAL_TEMPLATES=['「__KW__」についてお調べですね。解説の要約を作成することができますが、ご覧になりますか？','「__KW__」に関連する情報が見つかりました。要約をまとめますが、いかがでしょうか？','「__KW__」ですね。解説文から要点を抽出できますが、お読みになりますか？','「__KW__」についての情報を取得しました。要約を作成してよろしいでしょうか？','「__KW__」に関する解説が見つかりました。要約をご提示してもよろしいですか？','「__KW__」についてお探しのようです。解説の要約をご用意できますが、いかがですか？','「__KW__」ですね。関連する解説文から要点をまとめられますが、ご覧になりますか？','「__KW__」についての解説がありました。要約を作成してもよろしいでしょうか？'];
-var HOME_SUGGEST_TEMPLATES=['以前お調べになった<strong>__KW__</strong>に関連するトピックです。','<strong>__KW__</strong>に関連する情報を見つけました。','前回調べた<strong>__KW__</strong>の周辺トピックです。','<strong>__KW__</strong>から派生する話題を見つけました。','お探しになった<strong>__KW__</strong>に関連する話題です。','以前ご覧になった<strong>__KW__</strong>と関連する情報です。','<strong>__KW__</strong>にまつわるトピックを見つけました。','前回の<strong>__KW__</strong>から広がる関連話題です。'];
-var QS_TEXT="Webを検索...";
-var SLIDE_NAV_JS='(function(){var s=document.querySelectorAll(".slide");var c=0;function go(d){s[c].classList.remove("active");c+=d;if(c<0)c=0;if(c>=s.length)c=s.length-1;s[c].classList.add("active");document.getElementById("pageNum").innerText=(c+1)+" / "+s.length}document.getElementById("prevBtn").addEventListener("click",function(){go(-1)});document.getElementById("nextBtn").addEventListener("click",function(){go(1)});document.addEventListener("keydown",function(e){if(e.key==="ArrowRight")go(1);if(e.key==="ArrowLeft")go(-1)});})();';
-var defaultBgs=['https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80','https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1920&q=80','https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920&q=80','https://images.unsplash.com/photo-1518173946687-a1e2a370a5d8?w=1920&q=80','https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?w=1920&q=80','https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80'];
+// ==========================================
+// 1. スプレッドシート連携設定 (★URLを書き換えてください)
+// ==========================================
+const GAS_URL = 'https://script.google.com/a/macros/nerima-edu.jp/s/AKfycbz6jSu3eP6dIbAsWqhuQxXEpypCDVZY_FBmKcR4ytxx_Tv__avpECS8X6-GtYnbjUfmPw/exec'; // ← ここをあなたのGAS URLに書き換える
 
-function sleep(ms){return new Promise(function(r){setTimeout(r,ms)})}
-function escapeHtml(s){if(!s)return"";return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
-function shuffleArray(a){var arr=a.slice();for(var i=arr.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=arr[i];arr[i]=arr[j];arr[j]=t}return arr}
+function logToSheet(actionType, queryOrUrl, detail = '') {
+  if(!queryOrUrl || queryOrUrl.trim() === '') return;
+  const payload = {
+    action_type: actionType,
+    query_or_url: queryOrUrl,
+    detail: detail
+  };
+  fetch(GAS_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).catch(err => console.error('Logging failed:', err));
+}
 
-function gasSaveSearchLog(data){try{google.script.run.saveSearchLog(data)}catch(e){}}
-function gasSaveTextLog(data){try{google.script.run.saveTextLog(data)}catch(e){}}
-function gasLogChat(sender,message){try{google.script.run.saveChatLog({sender:sender,message:message})}catch(e){}}
-function gasSaveSidebarLog(data){try{google.script.run.saveSidebarLog(data)}catch(e){}}
-function gasGetNotification(){return new Promise(function(resolve){try{google.script.run.withSuccessHandler(function(r){resolve(r)}).getLatestNotification()}catch(e){resolve(null)}})}
-function gasGetSheetApps(){return new Promise(function(resolve){try{google.script.run.withSuccessHandler(function(r){resolve(r)}).getSheetApps()}catch(e){resolve(null)}})}
-function gasGetSearchCountermeasures(){return new Promise(function(resolve){try{google.script.run.withSuccessHandler(function(r){resolve(r||[])}).getSearchCountermeasures()}catch(e){resolve([])}})}
+// ==========================================
+// 2. Olivine コアロジック
+// ==========================================
+const $ = id => document.getElementById(id);
+let tabs = [];
+let activeTabId = null;
+let isSearchFocused = false;
+let isEpmOpen = false;
+let isExtOpen = false;
 
-// ====== 検索対策通知カードロジック ======
-var searchCounterRules=[],scCardCloseTimer=null,scCardShownWords={},SC_CLOSE_DELAY=10000;
-async function loadSearchCounterRules(){searchCounterRules=[];try{var r=await gasGetSearchCountermeasures();if(Array.isArray(r))searchCounterRules=r}catch(e){}}
-function checkSearchCounter(keyword){
-  if(!keyword||keyword.trim().length===0)return;
-  keyword=keyword.trim();
-  for(var i=0;i<searchCounterRules.length;i++){
-    var rule=searchCounterRules[i];
-    if(!rule.word)continue;
-    var word=rule.word.trim();
-    var kwLower=keyword.toLowerCase(),wordLower=word.toLowerCase();
-    if(kwLower.indexOf(wordLower)!==-1||wordLower.indexOf(kwLower)!==-1){
-      if(scCardShownWords[word])continue;
-      showSearchCounterCard(rule);
-      scCardShownWords[word]=true;
-      break;
+// 初期化
+window.addEventListener('DOMContentLoaded', () => {
+  loadApps();
+  createTab();
+  initSearchFx();
+});
+
+// タブ作成
+function createTab(url = null) {
+  const id = 'tab_' + Date.now();
+  const tabData = { id, url: url || '', title: '新しいタブ', history: [], histIndex: -1 };
+  tabs.push(tabData);
+ 
+  const iframe = document.createElement('iframe');
+  iframe.id = id;
+  $('mainArea').appendChild(iframe);
+ 
+  renderVtabs();
+  switchTab(id);
+ 
+  if (url) {
+    navigate(url);
+  } else {
+    showHome(true);
+  }
+}
+
+// タブ切り替え
+function switchTab(id) {
+  activeTabId = id;
+  tabs.forEach(t => {
+    const iframe = $(t.id);
+    if(iframe) iframe.classList.toggle('active', t.id === id);
+  });
+  renderVtabs();
+  const tab = getActiveTab();
+  if(tab && tab.url) {
+    $('urlInput').value = tab.url;
+    hideHome();
+  } else {
+    $('urlInput').value = '';
+    showHome(false);
+  }
+}
+
+function getActiveTab() {
+  return tabs.find(t => t.id === activeTabId);
+}
+
+// ページ遷移
+function navigate(input) {
+  if(!input) return;
+  let url = input.trim();
+ 
+  // URLか検索か判定
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    if (url.includes('.') && !url.includes(' ')) {
+      url = 'https://' + url;
+    } else {
+      // 検索クエリ → スプレッドシートに記録
+      logToSheet('search', url);
+      showSearchCounterCard(url);
+      url = 'https://www.google.com/search?igu=1&q=' + encodeURIComponent(url);
     }
   }
-}
-function showSearchCounterCard(rule){
-  var card=document.getElementById("searchCounterCard");
-  var textEl=document.getElementById("scCardText");
-  var imgArea=document.getElementById("scCardImgArea");
-  var closeBtn=document.getElementById("scCardClose");
-  if(scCardCloseTimer){clearTimeout(scCardCloseTimer);scCardCloseTimer=null}
-  closeBtn.classList.remove("visible");
-  textEl.textContent=rule.message||"";
-  if(rule.imageUrl){
-    imgArea.innerHTML='<img class="sc-card-img" src="'+escapeHtml(rule.imageUrl)+'" alt="" onerror="this.parentElement.innerHTML=\'<div class=sc-card-img-placeholder><i class=fas fa-info-circle></i></div>\'">';
-  }else{
-    imgArea.innerHTML='<div class="sc-card-img-placeholder"><i class="fas fa-info-circle"></i></div>';
-  }
-  card.classList.remove("hiding");
-  card.classList.add("show");
-  scCardCloseTimer=setTimeout(function(){
-    closeBtn.classList.add("visible");
-  },SC_CLOSE_DELAY);
-}
-function dismissSearchCounterCard(){
-  var card=document.getElementById("searchCounterCard");
-  var closeBtn=document.getElementById("scCardClose");
-  closeBtn.classList.remove("visible");
-  if(scCardCloseTimer){clearTimeout(scCardCloseTimer);scCardCloseTimer=null}
-  card.classList.add("hiding");
-  card.classList.remove("show");
-  setTimeout(function(){card.classList.remove("hiding")},350);
-}
+ 
+  // URLアクセス → スプレッドシートに記録
+  logToSheet('url_access', url);
 
-// ====== サイドバーIframeモバイル表示 ======
-var epmIframeZoomed=false,epmIframeMobileScale=1,epmIframeLastTapTime=0;
-function setupMobileIframeView(){
-  var scaler=document.getElementById("epmSidebarIframeScaler");
-  var iframe=document.getElementById("epmSidebarIframe");
-  var hint=document.getElementById("epmIframeZoomHint");
-  epmIframeZoomed=false;
-  function calcScale(){
-    var wrapW=document.getElementById("epmSidebarIframeWrap").clientWidth;
-    var mobileW=375;
-    var s=wrapW/mobileW;
-    epmIframeMobileScale=Math.min(s,1);
-    return epmIframeMobileScale;
-  }
-  function applyScale(){
-    var s=epmIframeZoomed?1:calcScale();
-    var wrapW=document.getElementById("epmSidebarIframeWrap").clientWidth;
-    var mobileW=375;
-    var realW=epmIframeZoomed?wrapW:mobileW;
-    var realH=epmIframeZoomed?wrapW*1.6:mobileW*1.6;
-    iframe.style.width=realW+"px";
-    iframe.style.height=realH+"px";
-    iframe.style.transform=epmIframeZoomed?"none":"scale("+s+")";
-    iframe.style.transformOrigin="top left";
-    iframe.style.borderRadius=epmIframeZoomed?"0":"16px";
-    iframe.style.boxShadow=epmIframeZoomed?"none":"0 4px 24px rgba(0,0,0,.5)";
-    scaler.style.height=epmIframeZoomed?(wrapW*1.6)+"px":(mobileW*epmIframeMobileScale*1.6)+"px";
-    scaler.style.overflowY=epmIframeZoomed?"auto":"hidden";
-    scaler.style.alignItems=epmIframeZoomed?"stretch":"flex-start";
-    scaler.style.justifyContent=epmIframeZoomed?"stretch":"center";
-    hint.classList.toggle("visible",!epmIframeZoomed);
-  }
-  scaler.addEventListener("dblclick",function(e){
-    if(e.target.closest(".epm-sidebar-iframe-close"))return;
-    epmIframeZoomed=!epmIframeZoomed;
-    applyScale();
-  });
-  scaler.addEventListener("touchend",function(e){
-    var now=Date.now();
-    if(now-epmIframeLastTapTime<350){
-      epmIframeZoomed=!epmIframeZoomed;
-      applyScale();
-      e.preventDefault();
+  const tab = getActiveTab();
+  if(tab) {
+    tab.url = url;
+    tab.title = url;
+    tab.history = tab.history.slice(0, tab.histIndex + 1);
+    tab.history.push(url);
+    tab.histIndex = tab.history.length - 1;
+   
+    const iframe = $(tab.id);
+    if(iframe) {
+      iframe.src = url;
+      iframe.classList.add('active');
     }
-    epmIframeLastTapTime=now;
-  },{passive:false});
-  var resizeObs=null;
-  if(typeof ResizeObserver!=="undefined"){
-    resizeObs=new ResizeObserver(function(){if(!epmIframeZoomed)applyScale()});
-    resizeObs.observe(document.getElementById("epmSidebarIframeWrap"));
-  }
-  window._epmIframeApplyScale=applyScale;
-}
-
-var bannerNotifTimer=null,bannerAutoHideTimer=null;
-function startBannerPolling(){bannerNotifTimer=setInterval(function(){pollBannerNotification()},4*60*1000);setTimeout(function(){pollBannerNotification()},5000)}
-async function pollBannerNotification(){var data=await gasGetNotification();if(data&&data.imageUrl&&data.description){showBannerNotif(data)}}
-function showBannerNotif(data){var el=document.getElementById("bannerNotif"),img=document.getElementById("bannerNotifImg"),desc=document.getElementById("bannerNotifDesc"),link=document.getElementById("bannerNotifLink"),body=document.getElementById("bannerNotifBody");img.src=data.imageUrl;img.onerror=function(){img.style.display="none"};img.style.display="";desc.textContent=data.description||"";link.textContent=data.linkUrl||"";body.onclick=function(){if(data.linkUrl)window.open(data.linkUrl,"_blank");dismissBannerNotif()};el.classList.add("show");if(bannerAutoHideTimer)clearTimeout(bannerAutoHideTimer);bannerAutoHideTimer=setTimeout(function(){dismissBannerNotif()},15000)}
-function dismissBannerNotif(){var el=document.getElementById("bannerNotif");el.classList.remove("show");if(bannerAutoHideTimer){clearTimeout(bannerAutoHideTimer);bannerAutoHideTimer=null}}
-
-var sheetApps=[],appChipsVisible=true;
-async function loadSheetApps(){sheetApps=[];try{var r=await gasGetSheetApps();if(r&&Array.isArray(r))sheetApps=r}catch(e){}renderAppChips()}
-function renderAppChips(){var el=document.getElementById("homeAppChips");if(!el)return;if(!appChipsVisible||sheetApps.length===0){el.style.display="none";return}el.style.display="flex";var h="";for(var i=0;i<sheetApps.length;i++){h+='<span class="home-app-chip" onclick="openSheetApp('+i+')">'+escapeHtml(sheetApps[i].name)+'</span>'}el.innerHTML=h}
-function openSheetApp(idx){if(!sheetApps[idx])return;createTab(sheetApps[idx].url)}
-function setAppChipsVisible(v){appChipsVisible=v;renderAppChips()}
-
-function getSearchKeywords(){return JSON.parse(localStorage.getItem("olivine_search_kw_v1")||"[]")}
-function recordSearchKeyword(kw){if(!kw||kw.trim().length<2)return;kw=kw.trim();var list=getSearchKeywords();list=list.filter(function(k){return k!==kw});list.unshift(kw);if(list.length>30)list=list.slice(0,30);localStorage.setItem("olivine_search_kw_v1",JSON.stringify(list))}
-
-function getHomeSuggestState(){try{return JSON.parse(localStorage.getItem("olivine_hsuggest_v3")||"{}")}catch(e){return{}}}
-function saveHomeSuggestState(s){localStorage.setItem("olivine_hsuggest_v3",JSON.stringify(s))}
-function pickHomeSuggestKeyword(){var keywords=getSearchKeywords().slice(0,8);if(keywords.length===0)return null;var st=getHomeSuggestState();var today=new Date().toDateString();if(st.date!==today){st={date:today,pool:shuffleArray(keywords),used:[]};saveHomeSuggestState(st)}var available=st.pool.filter(function(k){return st.used.indexOf(k)===-1});if(available.length===0){st.pool=shuffleArray(keywords);st.used=[];saveHomeSuggestState(st);available=st.pool.slice()}var pick=available[0];st.used.push(pick);saveHomeSuggestState(st);return pick}
-function skipHomeSuggest(){var st=getHomeSuggestState();if(st.pool&&st.pool.length>0){var available=st.pool.filter(function(k){return st.used.indexOf(k)===-1});if(available.length>0){st.used.push(available[0]);saveHomeSuggestState(st)}}}
-var homeSuggestTimer=null,homeSuggestHovered=false,currentSuggestKw=null;
-function showHomeSuggest(){if(homeSuggestTimer){clearTimeout(homeSuggestTimer);homeSuggestTimer=null}if(!isClarvetModeOn()){document.getElementById("homeSuggest").classList.remove("visible");currentSuggestKw=null;return}var el=document.getElementById("homeSuggest");var kw=pickHomeSuggestKeyword();if(!kw){el.classList.remove("visible");currentSuggestKw=null;return}currentSuggestKw=kw;var tmplIdx=kw.length%HOME_SUGGEST_TEMPLATES.length;var tmpl=HOME_SUGGEST_TEMPLATES[tmplIdx].replace("__KW__",escapeHtml(kw));document.getElementById("homeSuggestText").innerHTML=tmpl;document.getElementById("homeSuggestChips").innerHTML='<span style="font-size:11px;color:rgba(255,255,255,.4)">関連ワードを取得中...</span>';el.classList.add("visible");fetchHomeRelatedKeywords(kw);homeSuggestTimer=setTimeout(function(){if(!homeSuggestHovered)el.classList.remove("visible")},12000)}
-function hideHomeSuggest(){document.getElementById("homeSuggest").classList.remove("visible");currentSuggestKw=null;if(homeSuggestTimer){clearTimeout(homeSuggestTimer);homeSuggestTimer=null}}
-async function fetchHomeRelatedKeywords(keyword){try{var query=buildSearchQuery(keyword);var wData=await fetch("https://ja.wikipedia.org/w/api.php?action=query&list=search&srsearch="+encodeURIComponent(query)+"&format=json&origin=*").then(function(r){return r.json()});if(!wData.query||wData.query.search.length===0){document.getElementById("homeSuggestChips").innerHTML='<span style="font-size:11px;color:rgba(255,255,255,.3)">関連情報が見つかりませんでした</span>';return}var titles=wData.query.search.slice(0,6).map(function(r){return r.title});var html="";for(var i=0;i<titles.length;i++){html+='<span class="home-suggest-chip" onclick="homeSuggestSearch(\''+titles[i].replace(/'/g,"\\'")+'\')">'+escapeHtml(titles[i])+'</span>'}document.getElementById("homeSuggestChips").innerHTML=html}catch(e){document.getElementById("homeSuggestChips").innerHTML='<span style="font-size:11px;color:rgba(255,255,255,.3)">取得に失敗しました</span>'}}
-function homeSuggestSearch(kw){processInput(kw)}
-function cleanHomeSuggest(){skipHomeSuggest();hideHomeSuggest();copilotProposalIgnored();showCustomToast("Skip","次の提案に切り替えました",null,"left")}
-document.addEventListener("DOMContentLoaded",function(){var hs=document.getElementById("homeSuggest");hs.addEventListener("mouseenter",function(){homeSuggestHovered=true;if(homeSuggestTimer){clearTimeout(homeSuggestTimer);homeSuggestTimer=null}});hs.addEventListener("mouseleave",function(){homeSuggestHovered=false;homeSuggestTimer=setTimeout(function(){document.getElementById("homeSuggest").classList.remove("visible")},12000)})});
-
-function getCopilotState(){try{return JSON.parse(localStorage.getItem("olivine_copilot_v5")||'{"ignored":0,"paused":false,"pauseDate":"","pauseRemaining":0}')}catch(e){return{ignored:0,paused:false,pauseDate:"",pauseRemaining:0}}}
-function saveCopilotState(s){localStorage.setItem("olivine_copilot_v5",JSON.stringify(s))}
-function canShowCopilotProposal(){var st=getCopilotState();if(!st.paused)return true;var today=new Date().toDateString();if(st.pauseDate!==today){st.paused=false;st.ignored=0;st.pauseRemaining=0;saveCopilotState(st);return true}if(typeof st.pauseRemaining!=="number")st.pauseRemaining=0;if(st.pauseRemaining<=0){st.paused=false;st.ignored=0;saveCopilotState(st);return true}return false}
-function copilotProposalIgnored(){var st=getCopilotState();if(st.paused){st.pauseRemaining--;saveCopilotState(st);return}st.ignored++;if(st.ignored>=5){st.paused=true;st.pauseDate=new Date().toDateString();st.pauseRemaining=3;st.ignored=0;saveCopilotState(st);showCustomToast("Clarvet","5回連続でスキップされたため、3回休みます",null,"left")}else{saveCopilotState(st)}}
-function copilotProposalAccepted(){var st=getCopilotState();st.ignored=0;saveCopilotState(st)}
-
-function buildEpmWelcome(){var el=document.getElementById("epmWelcome");if(!el)return;var picks=shuffleArray(WELCOME_KEYWORDS).slice(0,8);var chipsHtml="";for(var i=0;i<picks.length;i++){chipsHtml+='<span class="epm-suggest-chip" onclick="epmQuickAsk(\''+picks[i].replace(/'/g,"\\'")+'\')">'+escapeHtml(picks[i])+'</span>'}el.innerHTML='<div class="epm-welcome-title">Clarvetに質問してください</div><div class="epm-welcome-sub">URLを投げると解析します。キーワードだけでも調べます。</div><div class="epm-suggestions">'+chipsHtml+'</div>'}
-
-async function initHomeBg(){var cb=localStorage.getItem("olivine_custom_bg"),bg=document.getElementById("homeBg");if(cb){bg.style.backgroundImage="url("+cb+")";bg.style.opacity="1";return}bg.style.opacity="0";fbBg(bg)}
-function fbBg(bg){var t=new Date,s=t.getFullYear()*10000+(t.getMonth()+1)*100+t.getDate(),u=defaultBgs[s%defaultBgs.length],i=new Image;i.onload=function(){bg.style.backgroundImage="url("+u+")";bg.style.opacity="1"};i.src=u}
-function handleBgUpload(e){var f=e.target.files[0];if(!f)return;var r=new FileReader;r.onload=function(ev){try{localStorage.setItem("olivine_custom_bg",ev.target.result)}catch(er){return}var b=document.getElementById("homeBg");b.style.opacity="0";setTimeout(function(){b.style.backgroundImage="url("+ev.target.result+")";b.style.opacity="1"},200)};r.readAsDataURL(f);e.target.value=""}
-function resetHomeBg(){localStorage.removeItem("olivine_custom_bg");initHomeBg()}
-
-var navGradAngle=0;
-(function(){var w=document.getElementById("navPillWrapper");if(!w)return;function s(){navGradAngle=(navGradAngle+1.03)%360;w.style.setProperty("--nav-grad-angle",navGradAngle+"deg");requestAnimationFrame(s)}s()})();
-
-var epmBorderGradAngle=0;
-(function(){var w=document.querySelector(".epm-border-wrapper");if(!w)return;function s(){epmBorderGradAngle=(epmBorderGradAngle+1.2)%360;w.style.setProperty("--epm-grad-angle",epmBorderGradAngle+"deg");requestAnimationFrame(s)}s()})();
-
-var qsTypingTimer=null,qsCharIdx=0;
-function startQsTyping(){clearQsTyping();qsCharIdx=0;typeNextQsChar()}
-function typeNextQsChar(){if(qsCharIdx>=QS_TEXT.length){qsTypingTimer=setTimeout(function(){startQsTyping()},4000);return}var ghostText=document.querySelector(".qs-ghost-text");if(ghostText)ghostText.textContent=QS_TEXT.substring(0,qsCharIdx+1);qsCharIdx++;qsTypingTimer=setTimeout(typeNextQsChar,120+Math.random()*80)}
-function clearQsTyping(){if(qsTypingTimer){clearTimeout(qsTypingTimer);qsTypingTimer=null}}
-function stopQsTyping(){clearQsTyping();var ghostText=document.querySelector(".qs-ghost-text");if(ghostText)ghostText.textContent=QS_TEXT}
-
-function setSearchFocused(f){if(sft){clearTimeout(sft);sft=null}if(f){navbar.classList.add("search-focused");mainArea.classList.add("search-hidden")}else{sft=setTimeout(function(){navbar.classList.remove("search-focused");mainArea.classList.remove("search-hidden")},150)}}
-function clearUrlInput(){urlInput.value="";urlInput.focus();updateUrlClearBtn()}
-
-var tabs=[],activeId=null,bms=[],histList=[],memoContent="",draggedTab=null,mainArea,urlInput,homeScreen,homeInput,tabsContainer,backdrop,navbar,MAX_NOTIFICATIONS=6,sft=false,vtabPinned=false;
-var epmTokenizer=null,epmProcessing=false,epmCancelled=false,epmContextMode=false,lastEpmFullText="",lastEpmTitle="",currentSlideData={},selectedTheme=null;
-var copilotBuffer=null,copilotTimer=null,fxCanvas=null,fxCtx=null,fxAnimating=false,lastProposalMsgId=null,topNotifDismissTimer=null;
-var clarvetMode=false,summaryCancelled=false,clarvetActivating=false;
-var apps=[];
-var lastSearchKeyword="";
-var epmSidebarIframeActive=false,epmSidebarUrlWarningTimer=null;
-
-function loadApps(){apps=JSON.parse(localStorage.getItem("olivine_apps_v1")||"[]");renderApps()}
-function saveApps(){localStorage.setItem("olivine_apps_v1",JSON.stringify(apps))}
-function addApp(){var nI=document.getElementById("appNameInput"),uI=document.getElementById("appUrlInput"),n=nI.value.trim(),u=uI.value.trim();if(!n||!u){showCustomToast("Apps","名前とURLを入力してください",null,"left");return}if(!u.match(/^https?:\/\//))u="https://"+u;apps.push({name:n,url:u});saveApps();renderApps();nI.value="";uI.value="";showCustomToast("Apps",n+"を追加しました",null,"left")}
-function deleteApp(i){var name=apps[i].name;apps.splice(i,1);saveApps();renderApps();showCustomToast("Apps",name+"を削除しました",null,"left")}
-function renderApps(){var l=document.getElementById("appList");if(!apps.length){l.innerHTML='<div class="app-empty">シート「アプリ」からも管理できます<br>（A:アプリ名 B:URL C:ON/OFF）</div>';return}var h="";for(var i=0;i<apps.length;i++){var a=apps[i],ini=a.name.charAt(0).toUpperCase();h+='<div class="app-item"><div class="app-item-icon">'+escapeHtml(ini)+'</div><div class="app-item-info"><div class="app-item-name">'+escapeHtml(a.name)+'</div><div class="app-item-url">'+escapeHtml(a.url)+'</div></div><button class="app-item-del" onclick="event.stopPropagation();deleteApp('+i+')">&times;</button></div>'}l.innerHTML=h}
-function matchAppCommand(text){var t=text.trim();var patterns=[/(.+?)を開いて/,/(.+?)開いて/,/(.+?)を開いてください/,/(.+?)を開いて！/,/(.+?)おとして/,/(.+?)起動して/,/(.+?)ひらいて/];for(var i=0;i<patterns.length;i++){var m=t.match(patterns[i]);if(m){var name=m[1].trim();for(var j=0;j<apps.length;j++){if(apps[j].name.toLowerCase()===name.toLowerCase()||apps[j].name.indexOf(name)!==-1||name.indexOf(apps[j].name)!==-1){return apps[j]}}}}return null}
-
-document.addEventListener("DOMContentLoaded",initApp);
-document.addEventListener("keydown",function(e){if(e.key==="Escape"){closeImageModal();closeSummaryCard()}if(e.shiftKey&&e.key==="E"){e.preventDefault();toggleEpmSidebar()}});
-
-function isClarvetModeOn(){return clarvetMode}
-
-function updateEpmSidebarUrlState(){
-  var inp=document.getElementById("epmSidebarUrlInput");
-  var goBtn=document.getElementById("epmSidebarUrlGo");
-  var icon=document.getElementById("epmUrlIcon");
-  if(clarvetMode){
-    inp.classList.remove("disabled");
-    goBtn.classList.remove("disabled");
-    inp.placeholder="URLまたは検索ワード...";
-    icon.style.color="var(--c)";
-  }else{
-    inp.classList.add("disabled");
-    goBtn.classList.add("disabled");
-    inp.placeholder="ClarvetModeをOnにしてください";
-    icon.style.color="var(--text-light)";
-    if(epmSidebarIframeActive)epmSidebarCloseIframe();
+    $('urlInput').value = url;
+    hideHome();
+    renderVtabs();
   }
 }
 
-function showEpmSidebarUrlWarning(msg){
-  var el=document.getElementById("epmSidebarUrlWarning");
-  el.textContent=msg||"ClarvetModeをOnにしてください";
-  el.classList.add("visible");
-  if(epmSidebarUrlWarningTimer)clearTimeout(epmSidebarUrlWarningTimer);
-  epmSidebarUrlWarningTimer=setTimeout(function(){el.classList.remove("visible")},2500);
-}
-
-function clearEpmSidebarUrl(){
-  document.getElementById("epmSidebarUrlInput").value="";
-  document.getElementById("epmSidebarUrlClear").classList.remove("visible");
-}
-
-function epmSidebarNavigate(){
-  if(!isClarvetModeOn()){showEpmSidebarUrlWarning("ClarvetModeをOnにしてください");return}
-  var inp=document.getElementById("epmSidebarUrlInput");
-  var text=inp.value.trim();
-  if(!text)return;
-  var isUrl=text.indexOf(".")!==-1&&text.indexOf(" ")===-1;
-  var targetUrl,type;
-  if(isUrl){
-    targetUrl=text.indexOf("http")===0?text:"https://"+text;
-    type="URL";
-  }else{
-    targetUrl="https://www.bing.com/search?q="+encodeURIComponent(text);
-    type="検索";
+// テキストモード
+function loadAsText() {
+  const tab = getActiveTab();
+  if(tab && tab.url) {
+    // Textモードで見た → スプレッドシートに記録
+    logToSheet('text_mode', tab.url);
+    showToast('Text Mode', 'テキストモードで表示しています: ' + tab.url);
+    // 実際のテキスト描画処理は元のコードに合わせて実装してください
   }
-  gasSaveSidebarLog({input:text,type:type,targetUrl:targetUrl});
-  checkSearchCounter(text);
-  var wrap=document.getElementById("epmSidebarIframeWrap");
-  var iframe=document.getElementById("epmSidebarIframe");
-  var chatEl=document.getElementById("epmChat");
-  var inputArea=document.getElementById("epmInputArea");
-  wrap.classList.add("active");
-  chatEl.classList.add("sidebar-hidden");
-  inputArea.classList.add("sidebar-hidden");
-  iframe.src=targetUrl;
-  epmSidebarIframeActive=true;
-  epmIframeZoomed=false;
-  document.getElementById("epmSidebarUrlBack").style.opacity="1";
-  setTimeout(function(){
-    if(window._epmIframeApplyScale)window._epmIframeApplyScale();
-  },300);
 }
 
-function epmSidebarCloseIframe(){
-  var wrap=document.getElementById("epmSidebarIframeWrap");
-  var iframe=document.getElementById("epmSidebarIframe");
-  var chatEl=document.getElementById("epmChat");
-  var inputArea=document.getElementById("epmInputArea");
-  wrap.classList.remove("active");
-  chatEl.classList.remove("sidebar-hidden");
-  inputArea.classList.remove("sidebar-hidden");
-  if(iframe)iframe.src="about:blank";
-  epmSidebarIframeActive=false;
-  epmIframeZoomed=false;
-  document.getElementById("epmSidebarUrlBack").style.opacity=".4";
-  var hint=document.getElementById("epmIframeZoomHint");
-  hint.classList.remove("visible");
+// ホーム画面
+function showHome(animate = false) {
+  const home = $('home');
+  home.classList.remove('hidden');
+  if(animate) {
+    $('homeTitle').classList.add('animating');
+    $('homeSub').classList.add('animating');
+    $('homeInput').classList.add('animating');
+  }
 }
 
-function epmSidebarGoBack(){
-  if(epmSidebarIframeActive)epmSidebarCloseIframe();
+function hideHome() {
+  $('home').classList.add('hidden');
 }
 
-function initEpmSidebarUrlEvents(){
-  var inp=document.getElementById("epmSidebarUrlInput");
-  var clearBtn=document.getElementById("epmSidebarUrlClear");
-  inp.addEventListener("input",function(){
-    clearBtn.classList.toggle("visible",inp.value.length>0);
-  });
-  inp.addEventListener("focus",function(){
-    if(!isClarvetModeOn()){
-      showEpmSidebarUrlWarning("ClarvetModeをOnにしてください");
-      inp.blur();
-    }
-  });
-  inp.addEventListener("keypress",function(e){
-    if(e.key==="Enter")epmSidebarNavigate();
+function goHome() {
+  const tab = getActiveTab();
+  if(tab) {
+    tab.url = '';
+    const iframe = $(tab.id);
+    if(iframe) { iframe.src = 'about:blank'; iframe.classList.remove('active'); }
+  }
+  $('urlInput').value = '';
+  showHome(true);
+  renderVtabs();
+}
+
+// 戻る・進む・更新
+function goBack() {
+  const tab = getActiveTab();
+  if(tab && tab.histIndex > 0) {
+    tab.histIndex--;
+    const url = tab.history[tab.histIndex];
+    tab.url = url;
+    $(tab.id).src = url;
+    $('urlInput').value = url;
+  }
+}
+function goForward() {
+  const tab = getActiveTab();
+  if(tab && tab.histIndex < tab.history.length - 1) {
+    tab.histIndex++;
+    const url = tab.history[tab.histIndex];
+    tab.url = url;
+    $(tab.id).src = url;
+    $('urlInput').value = url;
+  }
+}
+function doRefresh() {
+  const tab = getActiveTab();
+  if(tab && tab.url) {
+    $(tab.id).src = tab.url;
+  }
+}
+
+// URLバー入力
+ $('urlInput').addEventListener('keydown', e => {
+  if(e.key === 'Enter') {
+    navigate(e.target.value);
+    e.target.blur();
+  }
+});
+ $('urlInput').addEventListener('focus', () => {
+  $('navbar').classList.add('search-focused');
+  $('navPillWrapper').classList.add('pinned');
+  setTimeout(() => $('urlInput').select(), 100);
+});
+ $('urlInput').addEventListener('blur', () => {
+  $('navbar').classList.remove('search-focused');
+  $('navPillWrapper').classList.remove('pinned');
+});
+function clearUrlInput() {
+  $('urlInput').value = '';
+  $('urlInput').focus();
+}
+
+// ホーム検索入力
+ $('homeInput').addEventListener('keydown', e => {
+  if(e.key === 'Enter') {
+    navigate(e.target.value);
+  }
+});
+
+// クイック検索
+ $('quickSearchInput').addEventListener('keydown', e => {
+  if(e.key === 'Enter' && e.target.value.trim()) {
+    navigate(e.target.value.trim());
+    e.target.value = '';
+    e.target.blur();
+  }
+});
+
+// VTab描画
+function renderVtabs() {
+  const list = $('vtabList');
+  list.innerHTML = '';
+  tabs.forEach(tab => {
+    const div = document.createElement('div');
+    div.className = 'vtab-item' + (tab.id === activeTabId ? ' active' : '');
+    div.onclick = () => switchTab(tab.id);
+   
+    const favicon = document.createElement('div');
+    favicon.className = 'vtab-favicon';
+    favicon.innerHTML = '<i class="fas fa-globe"></i>';
+   
+    const title = document.createElement('div');
+    title.className = 'vtab-title-text';
+    title.textContent = tab.title || '新しいタブ';
+   
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'vtab-close-btn';
+    closeBtn.innerHTML = '<i class="fas fa-xmark"></i>';
+    closeBtn.onclick = (e) => { e.stopPropagation(); closeTab(tab.id); };
+   
+    div.appendChild(favicon);
+    div.appendChild(title);
+    div.appendChild(closeBtn);
+    list.appendChild(div);
   });
 }
 
-async function toggleClarvetMode(){
-  if(clarvetActivating)return;
-  if(!clarvetMode){
-    clarvetActivating=true;
-    await playClarvetActivation();
-    clarvetActivating=false;
-    clarvetMode=true;
-    document.body.classList.add("clarvet-on");
-    document.getElementById("clarvetLabel").classList.add("active");
-    localStorage.setItem("olivine_clarvet_v1","1");
-    updateEpmSidebarUrlState();
-    setTimeout(function(){showHomeSuggest();loadSheetApps()},300);
-  }else{
-    clarvetMode=false;
-    document.body.classList.remove("clarvet-on");
-    document.getElementById("clarvetLabel").classList.remove("active");
-    closeSummaryCard();
-    hideHomeSuggest();
-    localStorage.setItem("olivine_clarvet_v1","0");
-    updateEpmSidebarUrlState();
-    renderAppChips();
+function closeTab(id) {
+  if(tabs.length <= 1) return;
+  const index = tabs.findIndex(t => t.id === id);
+  const iframe = $(id);
+  if(iframe) iframe.remove();
+  tabs.splice(index, 1);
+ 
+  if(activeTabId === id) {
+    const newIndex = Math.min(index, tabs.length - 1);
+    switchTab(tabs[newIndex].id);
+  } else {
+    renderVtabs();
   }
 }
-async function playClarvetActivation(){
-  var ov=document.getElementById("clarvetActivation"),bg=document.getElementById("clarvetActivationBg"),txt=document.getElementById("clarvetActivationText"),modeLabel=document.getElementById("clarvetModeLabel");
-  txt.innerHTML="";bg.classList.remove("fade-out");modeLabel.classList.remove("show");ov.classList.add("visible");await sleep(500);
-  var msg="さあ、始めましょう";for(var i=0;i<msg.length;i++){txt.innerHTML=msg.substring(0,i+1)+'<span class="clarvet-cursor"></span>';await sleep(120)}
-  txt.innerHTML=msg+'<span class="clarvet-cursor"></span>';await sleep(300);modeLabel.classList.add("show");await sleep(900);txt.innerHTML=msg;bg.classList.add("fade-out");await sleep(600);ov.classList.remove("visible");modeLabel.classList.remove("show");
-}
-function initClarvetMode(){
-  var saved=localStorage.getItem("olivine_clarvet_v1");
-  if(saved==="1"){clarvetMode=true;document.body.classList.add("clarvet-on");document.getElementById("clarvetLabel").classList.add("active")}
+
+function toggleVtabPin() {
+  document.body.classList.toggle('vtab-pinned');
+  const isPinned = document.body.classList.contains('vtab-pinned');
+  $('vtabPinIcon').className = isPinned ? 'fas fa-thumbtack' : 'fas fa-thumbtack';
+  $('vtabPinLabel').textContent = isPinned ? '固定解除' : '固定する';
+  $('vtabPinBtn').classList.toggle('pinned-active', isPinned);
 }
 
-function initApp(){
-  mainArea=document.getElementById("mainArea");urlInput=document.getElementById("urlInput");homeScreen=document.getElementById("homeScreen");homeInput=document.getElementById("homeInput");tabsContainer=document.getElementById("vtabList");backdrop=document.getElementById("backdrop");navbar=document.getElementById("navbar");fxCanvas=document.getElementById("searchFxCanvas");fxCtx=fxCanvas.getContext("2d");
-  bms=JSON.parse(localStorage.getItem("olivine_bms_v1")||"[]");histList=JSON.parse(localStorage.getItem("olivine_history_v1")||"[]");memoContent=localStorage.getItem("olivine_memo_v1")||"";
-  initClarvetMode();updateEpmSidebarUrlState();initEpmSidebarUrlEvents();setupMobileIframeView();
-  document.getElementById("epmSidebarUrlBack").style.opacity=".4";
-  buildEpmWelcome();initHomeBg();loadApps();createTab();renderBookmarks();renderHistory();
-  document.getElementById("memoText").value=memoContent;
-  try{kuromoji.builder({dicPath:"https://cdn.jsdelivr.net/npm/kuromoji/dict/"}).build(function(err,t){if(!err)epmTokenizer=t})}catch(e){}
-  document.getElementById("epmInput").addEventListener("keydown",function(e){if(e.key==="Enter")handleEpmSend()});
-  urlInput.addEventListener("keypress",function(e){if(e.key==="Enter")processInput(urlInput.value)});
-  urlInput.addEventListener("input",updateUrlClearBtn);
-  urlInput.addEventListener("focus",function(){setSearchFocused(true)});
-  urlInput.addEventListener("blur",function(){setSearchFocused(false)});
-  homeInput.addEventListener("keypress",function(e){if(e.key==="Enter"){processInput(e.target.value);e.target.value=""}});
-  document.getElementById("memoText").addEventListener("input",function(e){localStorage.setItem("olivine_memo_v1",e.target.value);document.getElementById("memoStatus").textContent="保存しました";setTimeout(function(){document.getElementById("memoStatus").textContent="保存済み"},1000)});
-  var qsInput=document.getElementById("quickSearchInput");
-  qsInput.addEventListener("focus",function(){stopQsTyping();document.getElementById("qsGhost").style.opacity="0"});
-  qsInput.addEventListener("blur",function(){if(!qsInput.value){document.getElementById("qsGhost").style.opacity="1";startQsTyping()}});
-  qsInput.addEventListener("keypress",function(e){if(e.key==="Enter"){var v=qsInput.value.trim();if(v){lastSearchKeyword=v;recordSearchKeyword(v);gasSaveSearchLog({keyword:v,location:"左上クイック検索",pageUrl:"https://www.bing.com/search?q="+encodeURIComponent(v)});checkSearchCounter(v);processInput(v);qsInput.value="";qsInput.blur()}}});
-  startQsTyping();resizeFxCanvas();window.addEventListener("resize",resizeFxCanvas);loadSheetApps();loadSearchCounterRules();startBannerPolling();
+// 拡張パネル
+function toggleExtensions() {
+  isExtOpen = !isExtOpen;
+  $('extPanel').classList.toggle('open', isExtOpen);
+  $('backdrop').classList.toggle('open', isExtOpen);
 }
-function updateUrlClearBtn(){var btn=document.getElementById("navUrlClear");btn.classList.toggle("visible",urlInput.value.length>0)}
-function toggleVtabPin(){vtabPinned=!vtabPinned;document.body.classList.toggle("vtab-pinned",vtabPinned);var btn=document.getElementById("vtabPinBtn"),label=document.getElementById("vtabPinLabel");btn.classList.toggle("pinned-active",vtabPinned);label.textContent=vtabPinned?"固定解除":"固定する"}
-
-function resizeFxCanvas(){fxCanvas.width=mainArea.clientWidth;fxCanvas.height=mainArea.clientHeight}
-function triggerSearchFx(){resizeFxCanvas();var W=fxCanvas.width,H=fxCanvas.height,cx=W/2,cy=H/2;var particles=[];var hueBase=parseInt(getComputedStyle(document.documentElement).getPropertyValue("--particle-hue-base"))||80;for(var i=0;i<200;i++){var a=Math.random()*Math.PI*2,r=150+Math.random()*Math.max(W,H)*.35;particles.push({x:cx+Math.cos(a)*r,y:cy+Math.sin(a)*r,size:.8+Math.random()*1.8,alpha:0,delay:i*.003+Math.random()*.3,phase:Math.random()*Math.PI*2,hue:hueBase+Math.random()*30})}var startTime=null,DUR=3200;if(fxAnimating)return;fxAnimating=true;function animate(ts){if(!startTime)startTime=ts;var t=(ts-startTime)/DUR;fxCtx.clearRect(0,0,W,H);if(t>=1){fxAnimating=false;return}var pt=Math.max(0,Math.min(1,(t-.05)/.5)),ease=1-Math.pow(1-pt,3);var bp=Math.max(0,(t-.5)/.3),bEase=bp<1?1-Math.pow(1-bp,2):1;var fp=Math.max(0,(t-.65)/.35),fAlpha=1-fp;for(var i=0;i<particles.length;i++){var p=particles[i],lt=Math.max(0,t-p.delay);if(lt<=0)continue;if(t<.6){var cx2=cx+Math.sin(lt*2+p.phase)*12*bEase,cy2=cy+Math.cos(lt*1.7+p.phase)*12*bEase;p.x=p.x+(cx2-p.x)*ease*.12;p.y=p.y+(cy2-p.y)*ease*.12;p.alpha=Math.min(1,lt*4)*.7;if(bEase>.3){p.x+=Math.sin(lt*6+p.phase)*bEase*4;p.y+=Math.cos(lt*5+p.phase)*bEase*4}}else{var ba=(t-.6)/.4,baE=ba*ba,ang=Math.atan2(p.y-cy,p.x-cx),spd=80*baE;p.x+=Math.cos(ang)*spd*.016;p.y+=Math.sin(ang)*spd*.016;p.alpha=.7*(1-ba)}p.alpha*=fAlpha;if(p.alpha>.01){fxCtx.beginPath();fxCtx.arc(p.x,p.y,Math.max(.3,p.size*(1-fp*.3)),0,Math.PI*2);fxCtx.fillStyle="hsla("+p.hue+",65%,55%,"+p.alpha.toFixed(3)+")";fxCtx.fill()}}if(t>.45&&t<.75){var glowA=Math.sin((t-.45)/.3*Math.PI)*.25*fAlpha,grd=fxCtx.createRadialGradient(cx,cy,0,cx,cy,60);grd.addColorStop(0,"hsla("+hueBase+",65%,55%,"+glowA.toFixed(3)+")");grd.addColorStop(1,"hsla("+hueBase+",65%,55%,0)");fxCtx.fillStyle=grd;fxCtx.beginPath();fxCtx.arc(cx,cy,60,0,Math.PI*2);fxCtx.fill()}requestAnimationFrame(animate)}requestAnimationFrame(animate)}
-
-function triggerCopilotProposal(keyword){if(!keyword||keyword.trim().length===0)return;if(isClarvetModeOn())return;if(!canShowCopilotProposal())return;copilotBuffer=null;prepareCopilotSummary(keyword.trim());if(copilotTimer)clearTimeout(copilotTimer);copilotTimer=setTimeout(function(){if(copilotBuffer)deliverCopilotProposal(keyword.trim())},4500)}
-async function prepareCopilotSummary(keyword){try{var query=buildSearchQuery(keyword);var wData=await fetch("https://ja.wikipedia.org/w/api.php?action=query&list=search&srsearch="+encodeURIComponent(query)+"&format=json&origin=*").then(function(r){return r.json()});if(!wData.query||wData.query.search.length===0){copilotBuffer=null;return}var wikiResult=wData.query.search[0],wikiId=wikiResult.pageid;var pWD=fetch("https://ja.wikipedia.org/w/api.php?action=query&pageids="+wikiId+"&prop=extracts&explaintext&format=json&origin=*").then(function(r){return r.json()});var pWI=fetchWikiImagesFast(wikiId);var res=await Promise.all([pWD,pWI]);var wikiExtract=cleanWikiText(res[0].query.pages[wikiId].extract||"");var wikiSummary=generateSmartSummary(wikiExtract,450);copilotBuffer={title:wikiResult.title,text:wikiSummary,images:res[1],fullText:wikiExtract};window._tmpSlideData={title:wikiResult.title,text:wikiSummary,images:res[1]}}catch(e){copilotBuffer=null}}
-function deliverCopilotProposal(keyword){sendProposalToChat(keyword);var sb=document.getElementById("epmSidebar");if(!sb.classList.contains("open"))showClarvetTopNotif()}
-function sendProposalToChat(keyword){var chat=document.getElementById("epmChat");var w=document.getElementById("epmWelcome");if(w)w.style.display="none";var msgId="prop-"+Date.now();lastProposalMsgId=msgId;var tmpl=PROPOSAL_TEMPLATES[keyword.length%PROPOSAL_TEMPLATES.length].replace("__KW__",escapeHtml(keyword));var md=document.createElement("div");md.className="epm-msg bot";md.id=msgId;md.innerHTML='<div class="epm-proposal"><div class="epm-proposal-text">'+tmpl+'</div><div class="epm-proposal-btns"><button class="epm-proposal-no" onclick="onProposalNo()">今はいい</button><button class="epm-proposal-yes" onclick="onProposalYes()">はい</button></div></div>';chat.appendChild(md);chat.scrollTop=chat.scrollHeight}
-function showClarvetTopNotif(){var el=document.getElementById("copilotTopNotif");el.classList.remove("hiding");requestAnimationFrame(function(){el.classList.add("visible")});if(topNotifDismissTimer)clearTimeout(topNotifDismissTimer);topNotifDismissTimer=setTimeout(function(){hideClarvetTopNotif(true)},8000)}
-function hideClarvetTopNotif(countAsIgnored){var el=document.getElementById("copilotTopNotif");el.classList.add("hiding");el.classList.remove("visible");if(topNotifDismissTimer){clearTimeout(topNotifDismissTimer);topNotifDismissTimer=null}setTimeout(function(){el.classList.remove("hiding")},300);if(countAsIgnored)copilotProposalIgnored()}
-function onTopNotifClick(){hideClarvetTopNotif(false);var sb=document.getElementById("epmSidebar");if(!sb.classList.contains("open")){epmCancelled=false;sb.classList.add("open");backdrop.classList.remove("open");document.getElementById("extPanel").classList.remove("open")}setTimeout(function(){if(lastProposalMsgId){var msgEl=document.getElementById(lastProposalMsgId);if(msgEl)msgEl.scrollIntoView({behavior:"smooth",block:"center"})}},400)}
-function onProposalNo(){if(lastProposalMsgId){var el=document.getElementById(lastProposalMsgId);if(el)el.remove();lastProposalMsgId=null}copilotProposalIgnored()}
-async function onProposalYes(){if(lastProposalMsgId){var el=document.getElementById(lastProposalMsgId);if(el)el.remove();lastProposalMsgId=null}copilotProposalAccepted();hideClarvetTopNotif(false);var sb=document.getElementById("epmSidebar");if(!sb.classList.contains("open")){epmCancelled=false;sb.classList.add("open");backdrop.classList.remove("open");document.getElementById("extPanel").classList.remove("open");await sleep(300)}if(!copilotBuffer||!copilotBuffer.title)return;if(epmSidebarIframeActive)epmSidebarCloseIframe();var chat=document.getElementById("epmChat");var w=document.getElementById("epmWelcome");if(w)w.style.display="none";var ud=document.createElement("div");ud.className="epm-msg user";ud.innerHTML='<div class="epm-bubble-user">'+escapeHtml(copilotBuffer.title)+'について教えて</div>';chat.appendChild(ud);gasLogChat("user",copilotBuffer.title+"について教えて");var bd=document.createElement("div");bd.className="epm-msg bot";var cid="epm-"+Date.now();bd.innerHTML='<div class="epm-card"><div class="epm-card-title">'+escapeHtml(copilotBuffer.title)+'</div><div class="epm-card-text" id="epm-text-'+cid+'"></div><div id="epm-slide-suggest-'+cid+'"></div><div id="epm-gallery-wrap-'+cid+'"></div><div class="epm-related-links" id="epm-links-'+cid+'"></div><div id="epm-add-search-'+cid+'"></div></div>';chat.appendChild(bd);chat.scrollTop=chat.scrollHeight;var tc=document.getElementById("epm-text-"+cid);lastEpmFullText=copilotBuffer.fullText||"";lastEpmTitle=copilotBuffer.title;epmCancelled=false;await typeEpmText(copilotBuffer.text,tc);gasLogChat("Clarvet",copilotBuffer.text.substring(0,500));if(!epmCancelled)document.getElementById("epm-slide-suggest-"+cid).innerHTML='<div style="margin-top:12px"><span class="slide-suggest-link" onclick="showSlideThemeSelector()">よろしければ'+escapeHtml(copilotBuffer.title)+'のスライドを生成しましょうか？</span></div>';if(!epmCancelled&&copilotBuffer.images.length>0){var gw=document.getElementById("epm-gallery-wrap-"+cid);gw.innerHTML='<div class="epm-section-label">Images</div><div class="epm-gallery" id="epm-gallery-'+cid+'"></div>';var g=document.getElementById("epm-gallery-"+cid);for(var idx=0;idx<copilotBuffer.images.length;idx++){(function(u,i){var img=document.createElement("img");img.src=u;img.className="epm-gallery-img";img.loading=i<3?"eager":"lazy";img.style.animationDelay=(i*.05)+"s";img.onerror=function(){this.style.display="none"};img.onclick=function(){openImageModal(u)};g.appendChild(img)})(copilotBuffer.images[idx],idx)}if(!epmCancelled)chat.scrollTop=chat.scrollHeight}if(!epmCancelled){var cks=extractKeywords(copilotBuffer.text);if(cks.length>0){var ld2=document.getElementById("epm-links-"+cid);ld2.innerHTML='<div class="epm-related-link-label">深掘りする</div><div class="epm-related-links-row"></div>';var rw=ld2.querySelector(".epm-related-links-row");cks.slice(0,6).forEach(function(title){var ch=document.createElement("span");ch.className="epm-related-link";ch.textContent=title;ch.onclick=function(){document.getElementById("epmInput").value=title;handleEpmSend()};rw.appendChild(ch)})}document.getElementById("epm-add-search-"+cid).innerHTML='<button class="epm-add-search-btn" onclick="enableEpmContextSearch()"><i class="fas fa-magnifying-glass-plus"></i> この記事に追加で質問する</button>'}chat.scrollTop=chat.scrollHeight;copilotBuffer=null}
-function closeSummaryCard(){var ov=document.getElementById("summaryCardOverlay");if(!ov.classList.contains("visible"))return;summaryCancelled=false;ov.classList.remove("visible")}
-async function showSummaryCard(title,text,images){summaryCancelled=false;var ov=document.getElementById("summaryCardOverlay");var titleEl=document.getElementById("summaryCardTitle");var firstEl=document.getElementById("summaryFirstLine");var restEl=document.getElementById("summaryRestText");var scrollEl=document.getElementById("summaryImagesScroll");titleEl.textContent="";firstEl.textContent="";restEl.textContent="";scrollEl.innerHTML="";ov.classList.add("visible");await sleep(150);if(summaryCancelled)return;titleEl.textContent=title;await sleep(400);if(summaryCancelled)return;var polite=convertPoliteEnhanced(text);var sentences=polite.match(/[^。！？\n]+[。！？\n]?/g);if(!sentences){firstEl.textContent=polite;return}var firstSent=sentences[0]||"";var restSent=sentences.slice(1).join("");for(var i=0;i<firstSent.length;i++){if(summaryCancelled)return;firstEl.textContent+=firstSent[i];await sleep(55)}await sleep(100);if(summaryCancelled)return;for(var j=0;j<restSent.length;j++){if(summaryCancelled)return;restEl.textContent+=restSent[j];await sleep(12)}if(summaryCancelled)return;await sleep(200);if(images.length>0){for(var k=0;k<images.length;k++){if(summaryCancelled)return;var img=document.createElement("img");img.src=images[k];img.className="summary-img";img.onclick=(function(u){return function(){openImageModal(u)}})(images[k]);img.onerror=function(){this.style.display="none"};scrollEl.appendChild(img);await sleep(80);img.classList.add("shown");await sleep(120)}}else{scrollEl.innerHTML='<div class="summary-no-img">画像なし</div>'}}
-
-function resetEpmChat(){
-  epmCancelled=true;epmProcessing=false;epmContextMode=false;lastEpmFullText="";lastEpmTitle="";lastProposalMsgId=null;
-  hideClarvetTopNotif(false);
-  try{document.getElementById("epmSendBtn").disabled=false}catch(e){}
-  epmSidebarCloseIframe();
-  var c=document.getElementById("epmChat");
-  c.classList.remove("sidebar-hidden");
-  document.getElementById("epmInputArea").classList.remove("sidebar-hidden");
-  c.innerHTML='<div class="epm-welcome" id="epmWelcome"></div>';
-  buildEpmWelcome();
-  document.getElementById("epmInput").value="";
-  document.getElementById("epmInput").placeholder="質問、または「URL キーワード」...";
-  document.getElementById("epmContextLink").classList.remove("epm-context-active");
-  document.getElementById("epmContextUrl").textContent="現在のページのURLを追加";
+function switchExtTab(tabName) {
+  document.querySelectorAll('.ext-tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.ext-content').forEach(c => c.classList.remove('active'));
+  event.target.classList.add('active');
+  $('ext' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).classList.add('active');
 }
-function toggleEpmSidebar(){var sb=document.getElementById("epmSidebar");if(sb.classList.contains("open")){resetEpmChat();sb.classList.remove("open");document.getElementById("extPanel").classList.remove("open");backdrop.classList.remove("open")}else{closeAllOverlays();epmCancelled=false;sb.classList.add("open");updateContextLink();updateEpmSidebarUrlState();setTimeout(function(){document.getElementById("epmInput").focus()},300)}}
-function epmQuickAsk(t){if(epmSidebarIframeActive)epmSidebarCloseIframe();document.getElementById("epmInput").value=t;handleEpmSend()}
-function closeImageModal(){var m=document.getElementById("epmImgModal");m.style.opacity="0";m.style.pointerEvents="none";document.getElementById("epmModalImg").style.transform="scale(.92)"}
-function openImageModal(u){var m=document.getElementById("epmImgModal");document.getElementById("epmModalImg").src=u;m.style.opacity="1";m.style.pointerEvents="auto";document.getElementById("epmModalImg").style.transform="scale(1)"}
-function closeAllOverlays(){epmCancelled=true;epmProcessing=false;try{document.getElementById("epmSendBtn").disabled=false}catch(e){}document.getElementById("extPanel").classList.remove("open");backdrop.classList.remove("open");var sb=document.getElementById("epmSidebar");if(sb.classList.contains("open")){resetEpmChat();sb.classList.remove("open")}}
-function insertCurrentUrl(){var tab=tabs.find(function(t){return t.id===activeId});if(!tab||!tab.url)return;var i=document.getElementById("epmInput");if(i.value.indexOf(tab.url)!==-1)return;i.value=(i.value?i.value+" ":"")+tab.url+" ";i.focus()}
-function updateContextLink(){var tab=tabs.find(function(t){return t.id===activeId});var el=document.getElementById("epmContextUrl");if(el)el.textContent=tab&&tab.url?tab.url:"現在のページのURLを追加"}
-function enableEpmContextSearch(){if(!lastEpmFullText)return;epmContextMode=true;document.getElementById("epmContextLink").classList.add("epm-context-active");document.getElementById("epmContextUrl").textContent=lastEpmTitle+" の記事内を検索中...";document.getElementById("epmInput").placeholder=lastEpmTitle+" からキーワード検索...";document.getElementById("epmInput").focus()}
 
-function cleanWikiText(t){return t?t.replace(/[（(].*?[）)]/g,"").replace(/={2,}\s*.*?\s*={2,}/g,""):""}
-function convertPoliteEnhanced(t){if(!t)return"";var s=t;s=s.replace(/である(。|、|\n)/g,"です$1");s=s.replace(/([一-龥ぁ-んァ-ンa-zA-Z0-9]+)だ(。|、|\n)/g,"$1です$2");s=s.replace(/だ(。|、|\n)/g,"です$1");s=s.replace(/する(。|、|\n)/g,"します$1");s=s.replace(/した(。|、|\n)/g,"しました$1");return s}
-function generateSmartSummary(text,maxLen){maxLen=maxLen||400;if(!text)return"情報が見つかりませんでした。";var s=text.match(/[^。！？\n]+[。！？\n]/g)||[text];if(s.length<=3)return text;var sc=s.map(function(x,i){return{t:x,s:(i<2?10:0)+(x.length>20?2:0),i:i}});sc.sort(function(a,b){return b.s-a.s});var res=sc.slice(0,4).sort(function(a,b){return a.i-b.i}).map(function(x){return x.t});var j=res.join("");return j.length>maxLen?j.substring(0,maxLen)+"...":j}
-function buildSearchQuery(text){if(epmTokenizer){try{var tk=epmTokenizer.tokenize(text),w=tk.filter(function(t){if(t.pos!=="名詞")return false;if(["代名詞","非自立","接尾","接頭辞","数"].indexOf(t.pos_detail_1)!==-1)return false;return t.surface_form.length>=2}).map(function(t){return{w:t.surface_form,s:t.pos_detail_1==="固有名詞"?3:2}});w.sort(function(a,b){return b.s-a.s});var u=[],se={};for(var i=0;i<w.length;i++){if(!se[w[i].w]){se[w[i].w]=true;u.push(w[i].w);if(u.length>=3)break}}if(u.length>0)return u.join(" ")}catch(e){}}return text.replace(/とは[？\?]?\s*$/,"")}
-function extractKeywords(text){if(epmTokenizer){try{return epmTokenizer.tokenize(text).filter(function(t){if(t.pos!=="名詞")return false;if(["代名詞","非自立","接尾","接頭辞","数"].indexOf(t.pos_detail_1)!==-1)return false;return t.surface_form.length>=2}).map(function(t){return t.surface_form}).filter(function(v,i,a){return a.indexOf(v)===i}).slice(0,6)}catch(e){}}var m=text.match(/[\u4E00-\u9FFF]{2,}|[\u30A0-\u30FF]{2,}/g);return m?m.filter(function(v,i,a){return a.indexOf(v)===i}).slice(0,5):[]}
-async function typeEpmText(text,container){var p=convertPoliteEnhanced(text),s=p.match(/[^。！？\n]+[。！？\n]?/g);if(!s){container.textContent=p;return}for(var i=0;i<s.length;i++){if(epmCancelled)return;var sent=s[i];if(!sent.trim())continue;var span=document.createElement("span");span.className="epm-sentence";span.style.opacity="0";span.style.transform="translateY(4px)";span.style.transition="opacity 0.25s ease, transform 0.25s ease";container.appendChild(span);for(var j=0;j<sent.length;j+=3){if(epmCancelled)return;span.textContent+=sent.substring(j,Math.min(j+3,sent.length));await sleep(25)}span.style.opacity="1";span.style.transform="translateY(0)";if(i<s.length-1){await sleep(50);var dots=document.createElement("span");dots.className="epm-waiting-dots";container.appendChild(dots);for(var k=0;k<3;k++){if(epmCancelled)return;dots.textContent+="…";await sleep(50)}await sleep(150);dots.style.transition="opacity 0.2s";dots.style.opacity="0";await sleep(150);if(dots.parentElement)dots.remove()}await sleep(30)}}
-
-async function handleEpmSend(){var input=document.getElementById("epmInput"),text=input.value.trim();if(!text||epmProcessing)return;
-if(text==="アプリチップOFF"){setAppChipsVisible(false);if(epmSidebarIframeActive)epmSidebarCloseIframe();var w2=document.getElementById("epmWelcome");if(w2)w2.style.display="none";var c2=document.getElementById("epmChat");var m2=document.createElement("div");m2.className="epm-msg bot";m2.innerHTML='<div class="epm-card"><div class="epm-card-text" style="color:var(--text)">アプリチップを非表示にしました。</div></div>';c2.appendChild(m2);input.value="";gasLogChat("user",text);gasLogChat("Clarvet","アプリチップを非表示にしました。");return}
-if(text==="アプリチップON"){setAppChipsVisible(true);if(epmSidebarIframeActive)epmSidebarCloseIframe();var w3=document.getElementById("epmWelcome");if(w3)w3.style.display="none";var c3=document.getElementById("epmChat");var m3=document.createElement("div");m3.className="epm-msg bot";m3.innerHTML='<div class="epm-card"><div class="epm-card-text" style="color:var(--text)">アプリチップを表示にしました。</div></div>';c3.appendChild(m3);input.value="";gasLogChat("user",text);gasLogChat("Clarvet","アプリチップを表示にしました。");return}
-var matchedApp=matchAppCommand(text);if(matchedApp){if(epmSidebarIframeActive)epmSidebarCloseIframe();var w=document.getElementById("epmWelcome");if(w)w.style.display="none";var chat=document.getElementById("epmChat"),ud=document.createElement("div");ud.className="epm-msg user";ud.innerHTML='<div class="epm-bubble-user">'+escapeHtml(text)+'</div>';chat.appendChild(ud);gasLogChat("user",text);var bd=document.createElement("div");bd.className="epm-msg bot";bd.innerHTML='<div class="epm-card"><div class="epm-card-text" style="color:var(--text)">'+escapeHtml(matchedApp.name)+'を新しいタブで開きました。</div></div>';chat.appendChild(bd);gasLogChat("Clarvet",matchedApp.name+"を新しいタブで開きました。");chat.scrollTop=chat.scrollHeight;window.open(matchedApp.url,"_blank");input.value="";return}
-checkSearchCounter(text);
-if(epmSidebarIframeActive)epmSidebarCloseIframe();
-var w=document.getElementById("epmWelcome");if(w)w.style.display="none";input.value="";var chat=document.getElementById("epmChat"),ud=document.createElement("div");ud.className="epm-msg user";ud.innerHTML='<div class="epm-bubble-user">'+escapeHtml(text)+'</div>';chat.appendChild(ud);gasLogChat("user",text);chat.scrollTop=chat.scrollHeight;epmProcessing=true;document.getElementById("epmSendBtn").disabled=true;
-if(epmContextMode){await executeContextSearch(text,chat)}else{var isUrl=text.match(/^(https?:\/\/[^\s]+)(?:\s+(.+))?$/);if(isUrl){await executeUrlAnalysis(isUrl[1],isUrl[2]||null,chat)}else{await executeWikiSearch(text,chat)}}
-if(!epmCancelled){epmProcessing=false;document.getElementById("epmSendBtn").disabled=false;chat.scrollTop=chat.scrollHeight}}
-async function executeContextSearch(keyword,chat){var ld=document.createElement("div");ld.className="epm-msg bot";ld.innerHTML='<div class="epm-thinking">記事内を検索中 <span class="dots-anim"><span>.</span><span>.</span><span>.</span></span></div>';chat.appendChild(ld);chat.scrollTop=chat.scrollHeight;await sleep(300);if(epmCancelled)return;var ctx=extractContext(cleanWikiText(lastEpmFullText),keyword);if(!ctx||ctx.indexOf("見つかりません")!==-1){ld.innerHTML='<div class="epm-no-result">「'+lastEpmTitle+'」の記事中に「'+keyword+'」を含む文章は見つかりませんでした。</div>';gasLogChat("Clarvet","「"+lastEpmTitle+"」の記事中に「"+keyword+"」を含む文章は見つかりませんでした。");epmContextMode=false;document.getElementById("epmContextLink").classList.remove("epm-context-active");document.getElementById("epmContextUrl").textContent="現在のページのURLを追加";document.getElementById("epmInput").placeholder="質問、または「URL キーワード」...";return}var cid="epm-"+Date.now();ld.innerHTML='<div class="epm-card"><div class="epm-card-title">'+escapeHtml(lastEpmTitle)+' — 「'+escapeHtml(keyword)+'」</div><div class="epm-card-text" id="epm-text-'+cid+'"></div></div>';var tc=document.getElementById("epm-text-"+cid);await typeEpmText(ctx,tc);gasLogChat("Clarvet",ctx.substring(0,500));if(!epmCancelled){var bw=document.createElement("div");bw.innerHTML='<button class="epm-add-search-btn" onclick="enableEpmContextSearch()"><i class="fas fa-magnifying-glass-plus"></i> この記事に追加で質問する</button>';ld.querySelector(".epm-card").appendChild(bw);chat.scrollTop=chat.scrollHeight}}
-async function executeWikiSearch(originalText,chat){var ld=document.createElement("div");ld.className="epm-msg bot";ld.innerHTML='<div class="epm-thinking">Thinking & Searching <span class="dots-anim"><span>.</span><span>.</span><span>.</span></span></div>';chat.appendChild(ld);chat.scrollTop=chat.scrollHeight;await sleep(300);if(epmCancelled)return;var query=buildSearchQuery(originalText);try{var wData=await fetch("https://ja.wikipedia.org/w/api.php?action=query&list=search&srsearch="+encodeURIComponent(query)+"&format=json&origin=*").then(function(r){return r.json()});if(!wData.query||wData.query.search.length===0){ld.innerHTML='<div class="epm-no-result">「'+originalText+'」に関する情報が見つかりませんでした。</div>';gasLogChat("Clarvet","「"+originalText+"」に関する情報が見つかりませんでした。");return}var wikiResult=wData.query.search[0],wikiId=wikiResult.pageid;if(epmCancelled)return;ld.innerHTML='<div class="epm-thinking">情報源を照合中 <span class="dots-anim"><span>.</span><span>.</span><span>.</span></span></div>';chat.scrollTop=chat.scrollHeight;var pWD=fetch("https://ja.wikipedia.org/w/api.php?action=query&pageids="+wikiId+"&prop=extracts&explaintext&format=json&origin=*").then(function(r){return r.json()});var pWI=fetchWikiImagesFast(wikiId);var res=await Promise.all([pWD,pWI]);if(epmCancelled)return;var wikiExtract=cleanWikiText(res[0].query.pages[wikiId].extract||"");lastEpmFullText=wikiExtract;lastEpmTitle=wikiResult.title;var wikiSummary=generateSmartSummary(wikiExtract,450);window._tmpSlideData={title:wikiResult.title,text:wikiSummary,images:res[1]};var cid="epm-"+Date.now();ld.innerHTML='<div class="epm-card"><div class="epm-card-title">'+escapeHtml(wikiResult.title)+'</div><div class="epm-card-text" id="epm-text-'+cid+'"></div><div id="epm-slide-suggest-'+cid+'"></div><div id="epm-gallery-wrap-'+cid+'"></div><div class="epm-related-links" id="epm-links-'+cid+'"></div><div id="epm-add-search-'+cid+'"></div></div>';chat.scrollTop=chat.scrollHeight;var tc=document.getElementById("epm-text-"+cid);await typeEpmText(wikiSummary,tc);gasLogChat("Clarvet",wikiSummary.substring(0,500));if(!epmCancelled)document.getElementById("epm-slide-suggest-"+cid).innerHTML='<div style="margin-top:12px"><span class="slide-suggest-link" onclick="showSlideThemeSelector()">よろしければ'+escapeHtml(wikiResult.title)+'のスライドを生成しましょうか？</span></div>';if(!epmCancelled&&res[1].length>0){var gw=document.getElementById("epm-gallery-wrap-"+cid);gw.innerHTML='<div class="epm-section-label">Images</div><div class="epm-gallery" id="epm-gallery-'+cid+'"></div>';var g=document.getElementById("epm-gallery-"+cid);for(var idx2=0;idx2<res[1].length;idx2++){(function(u,i){var img=document.createElement("img");img.src=u;img.className="epm-gallery-img";img.loading=i<3?"eager":"lazy";img.style.animationDelay=(i*.05)+"s";img.onerror=function(){this.style.display="none"};img.onclick=function(){openImageModal(u)};g.appendChild(img)})(res[1][idx2],idx2)}if(!epmCancelled)chat.scrollTop=chat.scrollHeight}if(!epmCancelled){var cks=extractKeywords(wikiSummary),rt=wData.query.search.slice(0,4).filter(function(r){return r.title!==wikiResult.title}).map(function(r){return r.title}),fl=cks.concat(rt).filter(function(v,i,a){return a.indexOf(v)===i}).slice(0,6);if(fl.length>0){var ld2=document.getElementById("epm-links-"+cid);ld2.innerHTML='<div class="epm-related-link-label">深掘りする</div><div class="epm-related-links-row"></div>';var rw=ld2.querySelector(".epm-related-links-row");fl.forEach(function(title){var ch=document.createElement("span");ch.className="epm-related-link";ch.textContent=title;ch.onclick=function(){document.getElementById("epmInput").value=title;handleEpmSend()};rw.appendChild(ch)})}document.getElementById("epm-add-search-"+cid).innerHTML='<button class="epm-add-search-btn" onclick="enableEpmContextSearch()"><i class="fas fa-magnifying-glass-plus"></i> この記事に追加で質問する</button>';chat.scrollTop=chat.scrollHeight}}catch(e){if(!epmCancelled){ld.innerHTML='<div class="epm-no-result">処理中にエラーが発生しました。</div>';gasLogChat("Clarvet","処理中にエラーが発生しました。")}}}
-async function executeUrlAnalysis(url,keyword,chat){var ld=document.createElement("div");ld.className="epm-msg bot";ld.innerHTML='<div class="epm-thinking">ページを取得中 <span class="dots-anim"><span>.</span><span>.</span><span>.</span></span></div>';chat.appendChild(ld);chat.scrollTop=chat.scrollHeight;await sleep(400);if(epmCancelled)return;try{var txt=await fetchWithFallback(url),domain=getDomain(url),ctx;if(keyword){ld.innerHTML='<div class="epm-thinking">キーワード周辺を抽出中 <span class="dots-anim"><span>.</span><span>.</span><span>.</span></span></div>';await sleep(200);ctx=extractContext(txt,keyword)}else{ld.innerHTML='<div class="epm-thinking">テキストを要約中 <span class="dots-anim"><span>.</span><span>.</span><span>.</span></span></div>';await sleep(200);ctx=generateSmartSummary(txt.replace(/^#+\s/gm,"").replace(/\*\*(.*?)\*\*/g,"$1"),800)}if(epmCancelled)return;ctx=cleanWikiText(ctx);var cid="epm-"+Date.now();ld.innerHTML='<div class="epm-card"><div class="epm-card-title">'+escapeHtml(domain)+(keyword?" — 「"+escapeHtml(keyword)+"\"":" — 要約")+'</div><div class="epm-card-text" id="epm-text-'+cid+'"></div><div class="epm-related-links" style="margin-top:12px"><a href="'+url.replace(/"/g,"&quot;")+'" target="_blank" class="epm-related-link">元のページを開く</a></div></div>';var tc=document.getElementById("epm-text-"+cid);await typeEpmText(ctx,tc);gasLogChat("Clarvet",ctx.substring(0,500));chat.scrollTop=chat.scrollHeight}catch(e){if(!epmCancelled){ld.innerHTML='<div class="epm-no-result">解析に失敗しました: '+e.message+'</div>';gasLogChat("Clarvet","解析に失敗しました。")}}}
-async function fetchWithFallback(url){var du=url.startsWith("http")?url:"https://"+url,pu="https://r.jina.ai/https://"+du.replace(/^https?:\/\//,"");try{var r=await fetch(du);if(r.ok){var ct=r.headers.get("content-type")||"";if(ct.indexOf("text/")!==-1||ct.indexOf("json")!==-1)return await r.text()}}catch(e){}var pr=await fetch(pu);if(!pr.ok)throw new Error("取得失敗");return await pr.text()}
-function extractContext(text,keyword){if(!text||!keyword)return"キーワードが指定されていません。";var ct=text.replace(/^#+\s/gm,"").replace(/\*\*(.*?)\*\*/g,"$1").replace(/\n{2,}/g,"\n"),ss=ct.split(/(?<=[。！？\n])/).map(function(s){return s.trim()}).filter(function(s){return s.length>1}),res=[],ad={};for(var i=0;i<ss.length;i++){if(ss[i].indexOf(keyword)!==-1){var tg=[];if(i>0)tg.push(ss[i-1]);tg.push(ss[i]);if(i<ss.length-1)tg.push(ss[i+1]);for(var j=0;j<tg.length;j++){if(!ad[tg[j]]){ad[tg[j]]=true;res.push(tg[j])}}if(res.length>=9)break}}return res.length===0?"「"+keyword+"」を含む文章は見つかりませんでした。":res.join("")}
-
-async function fetchWikiImagesFast(pageId){var urls=[];try{var pi=await fetch("https://ja.wikipedia.org/w/api.php?action=query&pageids="+pageId+"&prop=pageimages&pithumbsize=400&format=json&origin=*"),pid=await pi.json(),pp=pid.query.pages[pageId];if(pp&&pp.thumbnail&&pp.thumbnail.source)urls.push(pp.thumbnail.source);var pr=await fetch("https://ja.wikipedia.org/w/api.php?action=query&pageids="+pageId+"&prop=pageprops|images&format=json&origin=*"),pd=await pr.json(),pg=pd.query.pages[pageId],wbId=pg.pageprops?pg.pageprops.wikibase_item:null,jaT=(pg.images||[]).map(function(i){return i.title}),ex=/\.svg$|\.ogg|\.ogv|\.wav|\.pdf|Commons-logo|Replace|Edit-clear|Ambox|Question.book|Crystal|Nuvola|Gnome|Silk|Folder.icon|Padlock|Notice|Disambig|Skin|Favicon|Transparent|Wiktionary|Wikisource|Pictogram|Edit|button|badge|icon|Logo|symbol/i;jaT=jaT.filter(function(t){return!ex.test(t)});if(wbId){try{var wr=await fetch("https://www.wikidata.org/wiki/Special:EntityData/"+wbId+".json"),wd=await wr.json(),en=wd.entities[wbId];if(en.claims&&en.claims.P18){en.claims.P18.forEach(function(cl){var fn="File:"+cl.mainsnak.datavalue.value.replace(/^File:/i,"").replace(/^ファイル:/i,"");if(jaT.indexOf(fn)===-1)jaT.push(fn)})}}catch(e){}}var batch=jaT.slice(0,15);if(batch.length>0){var tp=batch.map(function(t){return encodeURIComponent(t)}).join("|"),ir=await fetch("https://ja.wikipedia.org/w/api.php?action=query&titles="+tp+"&prop=imageinfo&iiprop=url|mime&iiurlwidth=400&format=json&origin=*"),id=await ir.json(),ip=id.query.pages;for(var p in ip){if(p!=="-1"){var info=ip[p].imageinfo;if(info&&info[0]&&info[0].mime&&info[0].mime.indexOf("image/")===0){var tu=info[0].thumburl;if(tu&&urls.indexOf(tu)===-1)urls.push(tu)}}}}urls=urls.slice(0,9)}catch(e){}return urls}
-
-function processInput(text){text=text.trim();if(!text)return;var isUrl=text.indexOf(".")!==-1&&text.indexOf(" ")===-1;if(isUrl){createTab(text.indexOf("http")===0?text:"https://"+text)}else{lastSearchKeyword=text;recordSearchKeyword(text);var searchUrl="https://www.bing.com/search?q="+encodeURIComponent(text);createTab(searchUrl);triggerSearchFx();gasSaveSearchLog({keyword:text,location:"URLバー",pageUrl:searchUrl});checkSearchCounter(text);if(isClarvetModeOn()){triggerClarvetModeSummary(text)}else{triggerCopilotProposal(text)}}}
-async function triggerClarvetModeSummary(keyword){try{var query=buildSearchQuery(keyword);var wData=await fetch("https://ja.wikipedia.org/w/api.php?action=query&list=search&srsearch="+encodeURIComponent(query)+"&format=json&origin=*").then(function(r){return r.json()});if(!wData.query||wData.query.search.length===0)return;var wikiResult=wData.query.search[0],wikiId=wikiResult.pageid;var pWD=fetch("https://ja.wikipedia.org/w/api.php?action=query&pageids="+wikiId+"&prop=extracts&explaintext&format=json&origin=*").then(function(r){return r.json()});var pWI=fetchWikiImagesFast(wikiId);var res=await Promise.all([pWD,pWI]);if(summaryCancelled)return;var wikiExtract=cleanWikiText(res[0].query.pages[wikiId].extract||"");var wikiSummary=generateSmartSummary(wikiExtract,400);window._tmpSlideData={title:wikiResult.title,text:wikiSummary,images:res[1]};await sleep(600);if(summaryCancelled)return;showSummaryCard(wikiResult.title,wikiSummary,res[1])}catch(e){}}
-
-function loadUrl(url){if(!activeId||!tabs.find(function(t){return t.id===activeId})){createTab(url);return}var tab=tabs.find(function(t){return t.id===activeId});if(!tab)return;tab.url=url;tab.title=getDomain(url);tab.isTextMode=false;tab.history=tab.history.slice(0,tab.historyIndex+1);tab.history.push(url);tab.historyIndex=tab.history.length-1;updateTabUI(tab);var iframe=document.getElementById(activeId);if(iframe)iframe.src=url;homeScreen.classList.add("hidden");hideHomeSuggest();closeSummaryCard();syncingUrl=true;urlInput.value=url;updateUrlClearBtn();syncingUrl=false;addHistory(url,tab.title);updateBmStar();updateContextLink()}
-function updateTabUI(tab){var ui=document.getElementById("ui-"+tab.id);if(!ui)return;ui.title=tab.title;var titleSpan=ui.querySelector(".vtab-title-text");if(titleSpan)titleSpan.textContent=tab.title;setVtabFavicon(ui,tab.url,tab.isTextMode)}
-function setVtabFavicon(el,url,isText){var fc=el.querySelector(".vtab-favicon");fc.innerHTML="";if(isText){fc.innerHTML='<i class="fas fa-file-lines" style="font-size:11px;color:var(--c)"></i>'}else if(url){var img=document.createElement("img");img.src="https://www.google.com/s2/favicons?domain="+getDomain(url)+"&sz=32";img.onerror=function(){fc.innerHTML='<i class="fas fa-globe" style="font-size:11px;color:var(--text-light)"></i>'};fc.appendChild(img)}else{fc.innerHTML='<i class="fas fa-globe" style="font-size:11px;color:var(--text-light)"></i>'}}
-function getDomain(url){try{return new URL(url).hostname}catch(e){return"Page"}}
-function goBack(){var tab=tabs.find(function(t){return t.id===activeId});if(!tab||tab.historyIndex<=0)return;tab.historyIndex--;var url=tab.history[tab.historyIndex];tab.url=url;tab.title=getDomain(url);tab.isTextMode=false;updateTabUI(tab);var fr=document.getElementById(activeId);if(fr)fr.src=url;syncingUrl=true;urlInput.value=url;updateUrlClearBtn();syncingUrl=false;homeScreen.classList.add("hidden");closeSummaryCard();updateBmStar();updateContextLink()}
-function goForward(){var tab=tabs.find(function(t){return t.id===activeId});if(!tab||tab.historyIndex>=tab.history.length-1)return;tab.historyIndex++;var url=tab.history[tab.historyIndex];tab.url=url;tab.title=getDomain(url);tab.isTextMode=false;updateTabUI(tab);var fr=document.getElementById(activeId);if(fr)fr.src=url;syncingUrl=true;urlInput.value=url;updateUrlClearBtn();syncingUrl=false;homeScreen.classList.add("hidden");closeSummaryCard();updateBmStar();updateContextLink()}
-function doRefresh(){if(!activeId)return;var tab=tabs.find(function(t){return t.id===activeId});if(tab&&tab.isTextMode)loadAsText(true);else{var fr=document.getElementById(activeId);if(fr&&fr.src&&fr.src!=="about:blank")fr.src=fr.src}}
-function goHome(){if(!activeId)return;var tab=tabs.find(function(t){return t.id===activeId});tab.url="";tab.title="New Tab";tab.isTextMode=false;updateTabUI(tab);var fr=document.getElementById(activeId);if(fr)fr.src="about:blank";syncingUrl=true;urlInput.value="";updateUrlClearBtn();syncingUrl=false;homeScreen.classList.remove("hidden");closeSummaryCard();updateBmStar();updateContextLink();triggerHomeAnimation();setTimeout(function(){showHomeSuggest();loadSheetApps()},600)}
-function triggerHomeAnimation(){var t=document.getElementById("homeTitle"),s=document.getElementById("homeSub"),i=document.getElementById("homeInput");[t,s,i].forEach(function(el){el.classList.remove("animating")});void t.offsetWidth;t.classList.add("animating");s.classList.add("animating");i.classList.add("animating")}
-var syncingUrl=false;
-function createTab(url){url=url||null;var id="tab-"+Date.now()+Math.floor(Math.random()*1000),nt={id:id,url:url||"",title:url?getDomain(url):"New Tab",isTextMode:false,history:url?[url]:[],historyIndex:url?0:-1};tabs.push(nt);var iframe=document.createElement("iframe");iframe.id=id;iframe.sandbox="allow-forms allow-scripts allow-same-origin allow-top-navigation allow-popups";mainArea.appendChild(iframe);var tabEl=document.createElement("div");tabEl.className="vtab-item";tabEl.id="ui-"+id;tabEl.draggable=true;tabEl.title=nt.title;tabEl.innerHTML='<div class="vtab-favicon"></div><span class="vtab-title-text">'+nt.title+'</span><button class="vtab-close-btn" onclick="event.stopPropagation();closeTab(event,\''+id+'\')">&times;</button>';setVtabFavicon(tabEl,nt.url,false);tabEl.addEventListener("click",function(e){if(!e.target.closest(".vtab-close-btn")&&!e.target.closest(".vtab-rename-input"))switchTab(id)});tabEl.addEventListener("dblclick",function(e){if(e.target.closest(".vtab-close-btn"))return;startTabRename(id,e)});addDragEvents(tabEl);tabsContainer.appendChild(tabEl);switchTab(id);setTimeout(function(){tabEl.scrollIntoView({behavior:"smooth",block:"nearest"})},10);if(url)loadUrl(url);else triggerHomeAnimation()}
-
-function startTabRename(tabId,e){e.stopPropagation();var ui=document.getElementById("ui-"+tabId);if(!ui)return;var titleSpan=ui.querySelector(".vtab-title-text");if(!titleSpan||titleSpan.style.display==="none")return;var tab=tabs.find(function(t){return t.id===tabId});if(!tab)return;var currentTitle=tab.title;var input=document.createElement("input");input.type="text";input.className="vtab-rename-input";input.value=currentTitle;titleSpan.style.display="none";titleSpan.parentElement.insertBefore(input,titleSpan.nextSibling);input.focus();input.select();function finishRename(){var newName=input.value.trim()||currentTitle;tab.title=newName;titleSpan.textContent=newName;titleSpan.style.display="";if(input.parentElement)input.remove();ui.title=newName}input.addEventListener("blur",finishRename);input.addEventListener("keydown",function(ev){if(ev.key==="Enter"){ev.preventDefault();input.blur()}if(ev.key==="Escape"){input.value=currentTitle;input.blur()}})}
-
-function closeTab(e,id){e.stopPropagation();var idx=-1;for(var i=0;i<tabs.length;i++){if(tabs[i].id===id){idx=i;break}}if(idx===-1)return;var el=document.getElementById(id),ui=document.getElementById("ui-"+id);if(el)el.remove();if(ui)ui.remove();tabs.splice(idx,1);if(activeId===id){if(tabs.length>0)switchTab(tabs[Math.min(idx,tabs.length-1)].id);else{activeId=null;homeScreen.classList.remove("hidden");urlInput.value="";updateUrlClearBtn();triggerHomeAnimation();setTimeout(function(){showHomeSuggest();loadSheetApps()},600)}}}
-function switchTab(id){var found=null;for(var i=0;i<tabs.length;i++){if(tabs[i].id===id){found=tabs[i];break}}if(!found)return;activeId=id;document.querySelectorAll("iframe").forEach(function(fr){fr.classList.remove("active")});var fr=document.getElementById(id);if(fr)fr.classList.add("active");document.querySelectorAll(".vtab-item").forEach(function(t){t.classList.remove("active")});var ui=document.getElementById("ui-"+id);if(ui)ui.classList.add("active");syncingUrl=true;urlInput.value=found.url;updateUrlClearBtn();syncingUrl=false;if(found.url){homeScreen.classList.add("hidden");hideHomeSuggest()}else{homeScreen.classList.remove("hidden");closeSummaryCard();triggerHomeAnimation();setTimeout(function(){showHomeSuggest();loadSheetApps()},600)}updateBmStar();updateContextLink()}
-function addDragEvents(tabEl){tabEl.addEventListener("dragstart",function(e){draggedTab=tabEl;setTimeout(function(){tabEl.style.opacity=".4"},0)});tabEl.addEventListener("dragend",function(){tabEl.style.opacity="";draggedTab=null;updateTabsOrder()});tabEl.addEventListener("dragover",function(e){e.preventDefault();var target=e.target.closest(".vtab-item");if(target&&target!==draggedTab){var b=target.getBoundingClientRect();if(e.clientY>b.y+b.height/2)target.after(draggedTab);else target.before(draggedTab)}})}
-function updateTabsOrder(){var ids=Array.from(tabsContainer.querySelectorAll(".vtab-item")).map(function(el){return el.id.replace("ui-","")});tabs=ids.map(function(id){return tabs.find(function(t){return t.id===id})}).filter(Boolean)}
-
-function extractCleanUrl(url){if(!url)return"";if(url.indexOf("r.jina.ai/http://")===0)return"http://"+url.replace("r.jina.ai/http://","");if(url.indexOf("r.jina.ai/https://")===0)return"https://"+url.replace("r.jina.ai/https://","");return url}
-function getTextModeColors(){return{bg:"#111113",text:"#e5e5e7",heading:"#7aa844",link:"#7aa844",hr:"#2c2c2e",footer:"#48484a"}}
-async function loadAsText(isRefresh,overrideUrl){isRefresh=isRefresh||false;var tab=tabs.find(function(t){return t.id===activeId});if(!tab)return;var cu=extractCleanUrl(tab.url),tu=overrideUrl||cu;if(!tu)return showCustomToast("Text","読み込むページがありません",null,"left");var iframe=document.getElementById(activeId);if(!iframe)return;var tc=getTextModeColors();iframe.srcdoc='<html><body style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Outfit,sans-serif;background:'+tc.bg+'"><div style="font-size:16px;font-weight:500;color:'+tc.text+';opacity:.5">Loading...</div></body></html>';try{var txt=await fetchWithFallback(tu),eu=tu.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"),c=tc;var dh='<html><head><meta charset="UTF-8"><style>body{font-family:Outfit,sans-serif;line-height:1.8;padding:36px 20px;max-width:780px;margin:0 auto;color:'+c.text+';background:'+c.bg+'}h1,h2,h3{margin-top:1.5em;margin-bottom:.4em;border-bottom:1px solid '+c.hr+';padding-bottom:.2em;color:'+c.heading+'}h1{font-size:22px}a{color:'+c.link+';text-decoration:none}hr{border:none;border-top:1px solid '+c.hr+';margin:40px 0}.ft{text-align:center;color:'+c.footer+';font-size:11px;margin-top:40px}</style></head><body>'+simpleMarkdownToHtml(txt)+'<hr><div class="ft">Olivine Text Mode &mdash; '+eu+'</div></body></html>';tab.isTextMode=true;tab.url=tu;tab.title="Text: "+getDomain(tu);updateTabUI(tab);iframe.srcdoc=dh;homeScreen.classList.add("hidden");closeSummaryCard();syncingUrl=true;urlInput.value=tu;updateUrlClearBtn();syncingUrl=false;gasSaveTextLog({url:tu,title:tab.title,keyword:lastSearchKeyword||""})}catch(error){iframe.srcdoc='<html><body style="padding:20px;font-family:Outfit,sans-serif;background:'+tc.bg+';color:'+tc.text+'"><h1 style="color:#dc4a4a">読み取りエラー</h1><p>'+error.message+'</p></body></html>'}}
-function simpleMarkdownToHtml(md){return md.replace(/^### (.*$)/gim,"<h3>$1</h3>").replace(/^## (.*$)/gim,"<h2>$1</h2>").replace(/^# (.*$)/gim,"<h1>$1</h1>").replace(/\*\*(.*)\*\*/gim,"<strong>$1</strong>").replace(/\*(.*)\*/gim,"<em>$1</em>").replace(/!\[(.*?)\]\((.*?)\)/gim,'<img alt="$1" src="$2" />').replace(/\[(.*?)\]\((.*?)\)/gim,'<a href="$2" target="_blank">$1</a>').replace(/\n/gim,"<br />")}
-
-function addHistory(url,title){histList=histList.filter(function(h){return h.url!==url});histList.unshift({url:url,title:title,time:new Date().toLocaleString()});if(histList.length>100)histList.pop();localStorage.setItem("olivine_history_v1",JSON.stringify(histList));renderHistory()}
-function renderHistory(){var l=document.getElementById("historyList");if(!histList.length){l.innerHTML='<div style="text-align:center;color:var(--text-light);padding:20px;font-size:12px">履歴はありません</div>';return}var h="";for(var i=0;i<histList.length;i++){var hi=histList[i];h+='<div class="list-item" onclick="createTab(\''+hi.url.replace(/'/g,"\\'")+'\');closeAllOverlays()"><div class="list-title">'+escapeHtml(hi.title)+'</div><div class="list-url">'+escapeHtml(hi.url)+'</div><div class="list-time">'+hi.time+'</div><button class="list-delete" onclick="event.stopPropagation();deleteHistory(event,'+i+')">&times;</button></div>'}l.innerHTML=h}
-function deleteHistory(e,i){e.stopPropagation();histList.splice(i,1);localStorage.setItem("olivine_history_v1",JSON.stringify(histList));renderHistory()}
-function clearExtHistory(){if(confirm("履歴を全て削除しますか？")){histList=[];localStorage.setItem("olivine_history_v1","[]");renderHistory()}}
-function addBookmark(){var tab=tabs.find(function(t){return t.id===activeId});if(!tab||!tab.url){showCustomToast("Bookmark","ブックマークできるページがありません",null,"left");return}var url=extractCleanUrl(tab.url),title=tab.title;if(bms.some(function(b){return b.url===url})){showCustomToast("Bookmark","すでに登録されています",null,"left");return}bms.push({title:title,url:url,time:new Date().toLocaleString()});localStorage.setItem("olivine_bms_v1",JSON.stringify(bms));renderBookmarks();updateBmStar();showCustomToast("Bookmark","ブックマークしました",null,"left")}
-function updateBmStar(){var star=document.getElementById("bmStar"),tab=tabs.find(function(t){return t.id===activeId});if(!tab||!tab.url){star.className="far fa-star";star.style.color="";return}var url=extractCleanUrl(tab.url);if(bms.some(function(b){return b.url===url})){star.className="fas fa-star";star.style.color="#d4a017"}else{star.className="far fa-star";star.style.color=""}}
-function renderBookmarks(){var l=document.getElementById("bookmarkList");if(!bms.length){l.innerHTML='<div style="text-align:center;color:var(--text-light);padding:20px;font-size:12px">ブックマークはありません<br><span style="font-size:10px">☆で追加</span></div>';return}var h="";for(var i=0;i<bms.length;i++){var b=bms[i];h+='<div class="list-item" onclick="createTab(\''+b.url.replace(/'/g,"\\'")+'\');closeAllOverlays()"><div class="list-title">'+escapeHtml(b.title)+'</div><div class="list-url">'+escapeHtml(b.url)+'</div><button class="list-delete" onclick="event.stopPropagation();deleteBookmark(event,'+i+')">&times;</button></div>'}l.innerHTML=h}
-function deleteBookmark(e,i){e.stopPropagation();bms.splice(i,1);localStorage.setItem("olivine_bms_v1",JSON.stringify(bms));renderBookmarks();updateBmStar()}
-
-function toggleExtensions(){var p=document.getElementById("extPanel"),o=p.classList.contains("open");closeAllOverlays();if(!o){p.classList.add("open");backdrop.classList.add("open")}}
-function switchExtTab(name,btn){if(btn){document.querySelectorAll(".ext-tab-btn").forEach(function(b){b.classList.remove("active")});btn.classList.add("active")}document.querySelectorAll(".ext-content").forEach(function(c){c.classList.remove("active")});var t=document.getElementById("ext-"+name);if(t)t.classList.add("active")}
-
-function showCustomToast(title,message,onClickAction,side){side=side||"right";var areaId=side==="left"?"notification-area-left":"notification-area",area=document.getElementById(areaId);while(area.children.length>=MAX_NOTIFICATIONS)area.removeChild(area.firstElementChild);var toast=document.createElement("div");toast.className="toast";if(onClickAction)toast.onclick=function(){onClickAction();toast.classList.add("closer");setTimeout(function(){toast.remove()},300)};toast.innerHTML='<button class="toast-close" onclick="event.stopPropagation();removeToast(this)">&times;</button><div class="toast-header">'+title+'</div><div class="toast-body">'+message+'</div>';area.appendChild(toast);setTimeout(function(){if(toast.parentElement){toast.classList.add("closer");setTimeout(function(){if(toast.parentElement)toast.remove()},300)}},8000)}
-function removeToast(b){var t=b.parentElement;t.classList.add("closer");setTimeout(function(){t.remove()},300)}
-
-var slideThemes={水色:{bg:"#e8f4f8",text:"#1a3a4a",accent:"#2196F3",overlay:"linear-gradient(135deg, rgba(33,150,243,0.6), rgba(0,0,0,0.4))"},ピンク:{bg:"#fdf2f4",text:"#4a1a2e",accent:"#e91e63",overlay:"linear-gradient(135deg, rgba(233,30,99,0.5), rgba(0,0,0,0.4))"},白:{bg:"#ffffff",text:"#1a1a1a",accent:"#333333",overlay:"linear-gradient(135deg, rgba(255,255,255,0.4), rgba(0,0,0,0.6))"},ベージュ:{bg:"#f5f0e8",text:"#3e352a",accent:"#8d6e4c",overlay:"linear-gradient(135deg, rgba(141,110,76,0.5), rgba(0,0,0,0.4))"}};
-function showSlideThemeSelector(){if(!window._tmpSlideData||!window._tmpSlideData.title)return;currentSlideData=window._tmpSlideData;selectedTheme=null;var chat=document.getElementById("epmChat"),td=document.createElement("div");td.className="epm-msg bot";td.id="theme-selector";var themes=["水色","ピンク","白","ベージュ"],tc={水色:"#e8f4f8",ピンク:"#fdf2f4",白:"#ffffff",ベージュ:"#f5f0e8"},txtC={水色:"#333",ピンク:"#333",白:"#333",ベージュ:"#333"},h='<div class="epm-card" style="padding:16px"><div style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text)">スライドテーマを選択</div><div class="theme-selector-grid" id="theme-options">';for(var i=0;i<themes.length;i++){h+='<div onclick="selectTheme(\''+themes[i]+'\')" class="theme-option" id="opt-'+themes[i]+'" style="background:'+tc[themes[i]]+';color:'+txtC[themes[i]]+'">'+themes[i]+"</div>"}h+='</div><button onclick="startSlideGen()" id="gen-slide-btn" class="gen-slide-btn" disabled>生成する</button></div>';td.innerHTML=h;chat.appendChild(td);chat.scrollTop=chat.scrollHeight}
-function selectTheme(name){selectedTheme=name;document.querySelectorAll(".theme-option").forEach(function(el){el.style.borderColor="transparent"});document.getElementById("opt-"+name).style.borderColor="#3b82f6";var btn=document.getElementById("gen-slide-btn");btn.disabled=false;btn.classList.add("active")}
-function startSlideGen(){if(!selectedTheme||!currentSlideData.title)return;var btn=document.getElementById("gen-slide-btn");btn.innerText="生成中...";btn.disabled=true;btn.classList.remove("active");setTimeout(function(){var html=generateSlides(currentSlideData.title,currentSlideData.text,currentSlideData.images,selectedTheme);openGeneratedTab(currentSlideData.title+" - Slides",html);btn.innerText="生成完了（新規タブで開きました）";btn.classList.add("done");selectedTheme=null;currentSlideData={}},500)}
-function generateSlides(title,fullText,images,themeName){var theme=slideThemes[themeName];var cleanedText=cleanWikiText(fullText);var sentences=cleanedText.split("\u3000").join("").split("\n").join("").split("\u3002").filter(function(s){return s.trim().length>0}).map(function(s){return s.trim()+"\u3002"});var slides="";var coverImg=(images.length>0)?images[0]:"";var coverStyle=coverImg?"background-image:url('"+coverImg+"');background-size:cover;background-position:center;":"background:"+theme.accent+";";slides+='<div class="slide active" style="'+coverStyle+'justify-content:center;align-items:flex-start;padding-left:60px"><div style="position:absolute;inset:0;background:'+theme.overlay+'"></div><h1 style="color:#fff;font-size:64px;font-weight:800;position:relative;z-index:1;margin:0;text-shadow:0 2px 10px rgba(0,0,0,0.5)">'+escapeHtml(title)+'</h1></div>';for(var idx=0;idx<sentences.length;idx++){var sent=escapeHtml(sentences[idx]);var img=(idx+1<images.length)?images[idx+1]:"";if(img){slides+='<div class="slide" style="background:'+theme.bg+';flex-direction:row"><div style="flex:1;padding:60px;display:flex;flex-direction:column;justify-content:center"><p style="color:'+theme.text+';font-size:26px;line-height:1.8;margin:0">'+sent+'</p></div><div style="flex:1;overflow:hidden"><img src="'+img+'" style="width:100%;height:100%;object-fit:cover"></div></div>'}else{slides+='<div class="slide" style="background:'+theme.bg+';justify-content:center;align-items:center"><p style="color:'+theme.text+';font-size:32px;line-height:1.8;margin:0;max-width:80%;text-align:center">'+sent+'</p></div>'}}
-var gh="";if(images.length>0){gh='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:800px;width:100%;margin-top:40px">';for(var k=0;k<images.length;k++){gh+='<img src="'+images[k]+'" style="width:100%;height:150px;object-fit:cover;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1))">'}gh+="</div>"}
-slides+='<div class="slide" style="background:'+theme.bg+';flex-direction:column;justify-content:center;align-items:center"><h2 style="color:'+theme.accent+';font-size:48px;margin:0;font-family:Outfit,sans-serif;font-weight:800">Clarvet Slides</h2>'+gh+'</div>';
-var total=sentences.length+2;
-return '<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><style>*{box-sizing:border-box;margin:0;padding:0}body{margin:0;overflow:hidden;font-family:Outfit,sans-serif;background:#f0f0f0}.slide{width:100vw;height:100vh;position:absolute;top:0;left:0;display:none;flex-direction:column}.slide.active{display:flex}.controls{position:fixed;bottom:20px;right:20px;display:flex;gap:10px;z-index:100}.controls button{background:rgba(0,0,0,0.5);color:#fff;border:none;padding:10px 15px;border-radius:50%;cursor:pointer;font-size:16px;backdrop-filter:blur(4px);transition:background 0.2s}.controls button:hover{background:rgba(0,0,0,0.8)}.page-num{position:fixed;bottom:20px;left:20px;color:rgba(0,0,0,0.5);font-size:14px;z-index:100;font-family:Outfit,sans-serif}</style><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;800&display=swap" rel="stylesheet"></head><body>'+slides+'<div class="page-num" id="pageNum">1 / '+total+'</div><div class="controls"><button id="prevBtn">\u2190</button><button id="nextBtn">\u2192</button></div><script>'+SLIDE_NAV_JS+'<\/script></body></html>'}
-
-function openGeneratedTab(title,htmlContent){var id="tab-"+Date.now()+Math.floor(Math.random()*1000),nt={id:id,url:"",title:title,isTextMode:false,history:[],historyIndex:-1};
-tabs.push(nt);
-var iframe=document.createElement("iframe");
-iframe.id=id;
-iframe.sandbox="allow-scripts allow-same-origin";
-mainArea.appendChild(iframe);
-var tabEl=document.createElement("div");
-tabEl.className="vtab-item";
-tabEl.id="ui-"+id;
-tabEl.draggable=true;
-tabEl.title=nt.title;
-tabEl.innerHTML='<div class="vtab-favicon"><i class="fas fa-tv" style="font-size:11px;color:#3b82f6"></i></div><span class="vtab-title-text">'+nt.title+'</span><button class="vtab-close-btn">&times;</button>';
-tabEl.querySelector(".vtab-close-btn").addEventListener("click",function(e){
-e.stopPropagation();
-var idx=-1;
-for(var ii=0;ii<tabs.length;ii++){
-if(tabs[ii].id===id){idx=ii;break}
+// サイドバーチャット (Clarvet)
+function toggleEpmSidebar() {
+  isEpmOpen = !isEpmOpen;
+  $('epmSidebar').classList.toggle('open', isEpmOpen);
 }
-if(idx===-1)return;
-var el=document.getElementById(id),ui=document.getElementById("ui-"+id);
-if(el)el.remove();
-if(ui)ui.remove();
-tabs.splice(idx,1);
-if(activeId===id){
-if(tabs.length>0)switchTab(tabs[Math.min(idx,tabs.length-1)].id);
-else{
-activeId=null;
-homeScreen.classList.remove("hidden");
-urlInput.value="";
-updateUrlClearBtn();
-triggerHomeAnimation();
-setTimeout(function(){showHomeSuggest();loadSheetApps()},600);
-}
-}
+
+// チャット送信
+ $('epmInput').addEventListener('keydown', e => {
+  if(e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendEpmMessage();
+  }
 });
-tabEl.addEventListener("click",function(e){
-if(!e.target.closest(".vtab-close-btn"))switchTab(id);
-});
-tabEl.addEventListener("dblclick",function(e){
-if(e.target.closest(".vtab-close-btn"))return;
-startTabRename(id,e);
-});
-addDragEvents(tabEl);
-tabsContainer.appendChild(tabEl);
-switchTab(id);
-homeScreen.classList.add("hidden");
-closeSummaryCard();
-iframe.srcdoc=htmlContent;
+
+function sendEpmMessage() {
+  const input = $('epmInput');
+  const text = input.value.trim();
+  if(!text) return;
+ 
+  // チャット発言 → スプレッドシートに記録
+  logToSheet('chat', 'user_message', text);
+ 
+  appendEpmMessage(text, 'user');
+  input.value = '';
+ 
+  // 疑似AI応答
+  setTimeout(() => {
+    const reply = `「${text}」についての検索結果です。`;
+    appendEpmMessage(reply, 'bot');
+    logToSheet('chat', 'bot_reply', reply);
+  }, 1000);
 }
 
-(function(){
-var homeIn=document.getElementById("homeInput");
-if(homeIn){
-homeIn.addEventListener("keypress",function(e){
-if(e.key==="Enter"){
-var v=homeIn.value.trim();
-if(v){
-lastSearchKeyword=v;
-recordSearchKeyword(v);
-gasSaveSearchLog({keyword:v,location:"ホーム画面",pageUrl:"https://www.bing.com/search?q="+encodeURIComponent(v)});
-checkSearchCounter(v);
+function appendEpmMessage(text, type) {
+  $('epmWelcome').style.display = 'none';
+  const msgDiv = document.createElement('div');
+  msgDiv.className = `epm-msg ${type}`;
+ 
+  if(type === 'user') {
+    msgDiv.innerHTML = `<div class="epm-bubble-user">${text}</div>`;
+  } else {
+    msgDiv.innerHTML = `<div class="epm-card"><div class="epm-card-text">${text}</div></div>`;
+  }
+  $('epmChat').appendChild(msgDiv);
+  $('epmChat').scrollTop = $('epmChat').scrollHeight;
 }
+
+// Clarvet Mode
+function toggleClarvetMode() {
+  document.body.classList.toggle('clarvet-on');
+  const isOn = document.body.classList.contains('clarvet-on');
+  $('clarvetLabel').classList.toggle('active', isOn);
 }
-});
+
+// 通知・トースト
+function showToast(title, body) {
+  const area = $('notification-area');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `
+    <div class="toast-header">${title}</div>
+    <div class="toast-body">${body}</div>
+    <button class="toast-close" onclick="this.parentElement.classList.add('closer'); setTimeout(() => this.parentElement.remove(), 200)">&times;</button>
+  `;
+  area.appendChild(toast);
+  setTimeout(() => { toast.classList.add('closer'); setTimeout(() => toast.remove(), 200); }, 4000);
 }
-})();
+
+// 検索カウンターカード
+function showSearchCounterCard(query) {
+  $('scCardText').textContent = `「${query}」を検索しました`;
+  $('searchCounterCard').classList.add('show');
+  setTimeout(() => closeSearchCounterCard(), 5000);
+}
+function closeSearchCounterCard() {
+  $('searchCounterCard').classList.remove('show');
+}
+
+// アプリ・ブックマーク (モック)
+function loadApps() {
+  const chips = ['Google', 'YouTube', 'GitHub', 'Twitter'];
+  const chipContainer = $('homeAppChips');
+  chips.forEach(name => {
+    const chip = document.createElement('div');
+    chip.className = 'home-app-chip';
+    chip.textContent = name;
+    chip.onclick = () => navigate(name + '.com');
+    chipContainer.appendChild(chip);
+  });
+}
+
+function addBookmark() {}
+
+// 検索エフェクト (Canvas)
+function initSearchFx() {
+  const canvas = $('searchFxCanvas');
+  const ctx = canvas.getContext('2d');
+  function resize() {
+    canvas.width = $('mainArea').clientWidth;
+    canvas.height = $('mainArea').clientHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+}
+
+// 画像モーダル
+function closeImgModal() {
+  $('epmImgModal').style.opacity = '0';
+  $('epmImgModal').style.pointerEvents = 'none';
+}
+
+function closeAllOverlays() {
+  if(isExtOpen) toggleExtensions();
+}
+
+// バナー通知 (モック)
+function dismissBannerNotif() {
+  $('bannerNotif').classList.remove('show');
+}
+
 </script>
 </body>
 </html>
